@@ -16,9 +16,9 @@ except ValueError:
 // IVector vectors common algebra operations interface
 type IVector interface {
 	Str() string
-	Sum(vector Vector) Vector
-	Minus(vector Vector) Vector
-	Multiply(scalar float64) Vector
+	Sum(addendVector Vector)
+	Minus(vector Vector)
+	Multiply(scalar float64)
 	Equals(vector Vector) bool
 }
 
@@ -46,34 +46,41 @@ func (v *Vector) Str() string {
 	return fmt.Sprintf("Vector: %v", v.Coordinates)
 }
 
-// Sum vector algebra sum operation
-func (v *Vector) Sum(vector Vector) Vector {
-	addendLen := len(vector.Coordinates)
+func multiDimensionVectorIterator(v1, v2 *Vector, operation func(float64, float64) float64) {
+	secondVectorLen := len(v2.Coordinates)
 	newCoordinates := []float64{}
-	for index, coordinate := range v.Coordinates {
+	for index, coordinate := range v1.Coordinates {
 		var addition float64
-		if addendLen-1 >= index {
-			addition = vector.Coordinates[index]
+		if secondVectorLen-1 >= index {
+			addition = v2.Coordinates[index]
 		}
-		// sumResult := SetPrecision(coordinate+addition, 3)
-		newCoordinates = append(newCoordinates, coordinate+addition)
+		newCoordinates = append(newCoordinates, operation(coordinate, addition))
 	}
 
-	augendLen := len(v.Coordinates)
-	if addendLen > augendLen {
-		newCoordinates = append(newCoordinates, vector.Coordinates[augendLen:]...)
+	firstVectorLen := len(v1.Coordinates)
+	if secondVectorLen > firstVectorLen {
+		newCoordinates = append(newCoordinates, v2.Coordinates[firstVectorLen:]...)
 	}
 
-	v.Coordinates = newCoordinates
-	return Vector{Coordinates: newCoordinates}
+	v1.Coordinates = newCoordinates
+}
+
+// Sum vector algebra sum operation
+func (v *Vector) Sum(addendVector Vector) {
+	operation := func(augendCoordinate float64, addendCoordinate float64) float64 {
+		return augendCoordinate + addendCoordinate
+	}
+	multiDimensionVectorIterator(v, &addendVector, operation)
 }
 
 // Minus vectors algebra subtraction operation
-func (v *Vector) Minus(vector Vector) Vector {
-	return Vector{}
+func (v *Vector) Minus(subtrahendVector Vector) {
+	operation := func(minuendCoordinate float64, subtrahendCoordinate float64) float64 {
+		return minuendCoordinate - subtrahendCoordinate
+	}
+	multiDimensionVectorIterator(v, &subtrahendVector, operation)
 }
 
 // Multiply vector multiply algebra operation
-func (v *Vector) Multiply(scalar float64) Vector {
-	return Vector{}
+func (v *Vector) Multiply(scalar float64) {
 }

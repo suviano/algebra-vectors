@@ -48,11 +48,11 @@ func TestVectorSum(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{8.218, -9.341}}
 		v2 := Vector{Coordinates: []float64{-1.129, 2.111}}
 
-		sumVector := v1.Sum(v2)
+		v1.Sum(v2)
 
 		expectedSumVector := Vector{Coordinates: []float64{7.089, -7.229999999999999}}
-		if !sumVector.Equals(expectedSumVector) {
-			t.Errorf("method 'Sum' has returned %s while the expected is %s", sumVector.Str(), expectedSumVector.Str())
+		if !v1.Equals(expectedSumVector) {
+			t.Errorf("method 'Sum' has returned %s while the expected is %s", v1.Str(), expectedSumVector.Str())
 		}
 	})
 
@@ -60,11 +60,11 @@ func TestVectorSum(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{4, 5, 6}}
 
-		sumVector := v1.Sum(v2)
+		v1.Sum(v2)
 
 		expectedSumVector := Vector{Coordinates: []float64{5, 7, 6}}
-		if !sumVector.Equals(expectedSumVector) {
-			t.Errorf("method 'Sum' has returned %s while the expected is %s", sumVector.Str(), expectedSumVector.Str())
+		if !v1.Equals(expectedSumVector) {
+			t.Errorf("method 'Sum' has returned %s while the expected is %s", v1.Str(), expectedSumVector.Str())
 		}
 	})
 }
@@ -74,11 +74,11 @@ func TestVectorMinus(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{7.119, 8.215}}
 		v2 := Vector{Coordinates: []float64{-8.223, .878}}
 
-		differenceVector := v1.Minus(v2)
+		v1.Minus(v2)
 
-		expectedDifferenceVector := Vector{Coordinates: []float64{-1.104, 7.337}}
-		if !differenceVector.Equals(expectedDifferenceVector) {
-			t.Errorf("method 'Minus' has returned %s while the expected is %s", differenceVector.Str(), expectedDifferenceVector.Str())
+		expectedDifferenceVector := Vector{Coordinates: []float64{15.342, 7.337}}
+		if !v1.Equals(expectedDifferenceVector) {
+			t.Errorf("method 'Minus' has returned %s while the expected is %s", v1.Str(), expectedDifferenceVector.Str())
 		}
 	})
 
@@ -86,11 +86,11 @@ func TestVectorMinus(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{4, 5, 6}}
 
-		differenceVector := v1.Minus(v2)
+		v1.Minus(v2)
 
-		expectedDifferenceVector := Vector{Coordinates: []float64{-3, -3, -6}}
-		if !differenceVector.Equals(expectedDifferenceVector) {
-			t.Errorf("method 'Minus' has returned %s while the expected is %s", differenceVector.Str(), expectedDifferenceVector.Str())
+		expectedDifferenceVector := Vector{Coordinates: []float64{-3, -3, 6}}
+		if !v1.Equals(expectedDifferenceVector) {
+			t.Errorf("method 'Minus' has returned %s while the expected is %s", v1.Str(), expectedDifferenceVector.Str())
 		}
 	})
 }
@@ -99,33 +99,33 @@ func TestVectorMultiply(t *testing.T) {
 	t.Run("VectorsMultiplyPositiveNumber", func(t *testing.T) {
 		vector := Vector{Coordinates: []float64{1, 2}}
 
-		productVector := vector.Multiply(2)
+		vector.Multiply(2)
 
 		expectedProductVector := Vector{Coordinates: []float64{2, 4}}
-		if !productVector.Equals(expectedProductVector) {
-			t.Errorf("method 'Multiply' has returned %s while the expected is %s", productVector.Str(), expectedProductVector.Str())
+		if !vector.Equals(expectedProductVector) {
+			t.Errorf("method 'Multiply' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
 		}
 	})
 
 	t.Run("VectorsMultiplyNegativeNumber", func(t *testing.T) {
 		vector := Vector{Coordinates: []float64{1, 2}}
 
-		productVector := vector.Multiply(-2)
+		vector.Multiply(-2)
 
 		expectedProductVector := Vector{Coordinates: []float64{-2, -4}}
-		if !productVector.Equals(expectedProductVector) {
-			t.Errorf("method 'Multiply' has returned %s while the expected is %s", productVector.Str(), expectedProductVector.Str())
+		if !vector.Equals(expectedProductVector) {
+			t.Errorf("method 'Multiply' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
 		}
 	})
 
 	t.Run("VectorsMultiplyDecimalNumber", func(t *testing.T) {
 		vector := Vector{Coordinates: []float64{1.671, -1.012, -0.318}}
 
-		productVector := vector.Multiply(7.41)
+		vector.Multiply(7.41)
 
 		expectedProductVector := Vector{Coordinates: []float64{12.38211, -7.49892, -2.35638}}
-		if !productVector.Equals(expectedProductVector) {
-			t.Errorf("method 'Multiply' has returned %s while the expected is %s", productVector.Str(), expectedProductVector.Str())
+		if !vector.Equals(expectedProductVector) {
+			t.Errorf("method 'Multiply' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
 		}
 	})
 }
