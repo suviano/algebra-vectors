@@ -50,11 +50,11 @@ func multiDimensionVectorIterator(v1, v2 *Vector, operation func(float64, float6
 	secondVectorLen := len(v2.Coordinates)
 	newCoordinates := []float64{}
 	for index, coordinate := range v1.Coordinates {
-		var addition float64
+		var secondCoordinate float64
 		if secondVectorLen-1 >= index {
-			addition = v2.Coordinates[index]
+			secondCoordinate = v2.Coordinates[index]
 		}
-		newCoordinates = append(newCoordinates, operation(coordinate, addition))
+		newCoordinates = append(newCoordinates, operation(coordinate, secondCoordinate))
 	}
 
 	firstVectorLen := len(v1.Coordinates)
@@ -83,4 +83,9 @@ func (v *Vector) Minus(subtrahendVector Vector) {
 
 // Multiply vector multiply algebra operation
 func (v *Vector) Multiply(scalar float64) {
+	newCoordinates := []float64{}
+	for _, coordinate := range v.Coordinates {
+		newCoordinates = append(newCoordinates, coordinate*scalar)
+	}
+	v.Coordinates = newCoordinates
 }
