@@ -48,7 +48,24 @@ func (v *Vector) Str() string {
 
 // Sum vector algebra sum operation
 func (v *Vector) Sum(vector Vector) Vector {
-	return Vector{}
+	addendLen := len(vector.Coordinates)
+	newCoordinates := []float64{}
+	for index, coordinate := range v.Coordinates {
+		var addition float64
+		if addendLen-1 >= index {
+			addition = vector.Coordinates[index]
+		}
+		// sumResult := SetPrecision(coordinate+addition, 3)
+		newCoordinates = append(newCoordinates, coordinate+addition)
+	}
+
+	augendLen := len(v.Coordinates)
+	if addendLen > augendLen {
+		newCoordinates = append(newCoordinates, vector.Coordinates[augendLen:]...)
+	}
+
+	v.Coordinates = newCoordinates
+	return Vector{Coordinates: newCoordinates}
 }
 
 // Minus vectors algebra subtraction operation
