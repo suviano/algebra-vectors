@@ -153,13 +153,22 @@ func TestVectorMagnitude(t *testing.T) {
 }
 
 func TestVectorDirection(t *testing.T) {
-	// t.Run("VectorMagnitudeScenarioThree", func(t *testing.T) {
-	// 	vector := Vector{Coordinates: []float64{5.581, -2.136}}
-	// 	vector.Magnitude()
-	// })
+	unitVectorErrMsg := "Direction should have a vector of 1 has %.0f"
+	t.Run("VectorDirectionScenarioOne", func(t *testing.T) {
+		vector := Vector{Coordinates: []float64{5.581, -2.136}}
+		unitVector := Vector{Coordinates: vector.Direction()}
+		unitVectorMagnitude := unitVector.Magnitude()
+		if fmt.Sprintf("%.0f", unitVectorMagnitude) != "1" {
+			t.Errorf(unitVectorErrMsg, unitVectorMagnitude)
+		}
+	})
 
-	// t.Run("VectorMagnitudeScenarioFour", func(t *testing.T) {
-	// 	vector := Vector{Coordinates: []float64{1.996, 3.108, -4.554}}
-	// 	vector.Magnitude()
-	// })
+	t.Run("VectorDirectionScenarioTwo", func(t *testing.T) {
+		vector := Vector{Coordinates: []float64{1.996, 3.108, -4.554}}
+		unitVector := Vector{Coordinates: vector.Direction()}
+		unitVectorMagnitude := unitVector.Magnitude()
+		if fmt.Sprintf("%0.f", unitVectorMagnitude) != "1" {
+			t.Errorf(unitVectorErrMsg, unitVectorMagnitude)
+		}
+	})
 }

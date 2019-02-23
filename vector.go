@@ -97,7 +97,7 @@ func (v *Vector) Multiply(scalar float64) Vector {
 	return Vector{Coordinates: newCoordinates}
 }
 
-// Magnitude distance between the x coordinates sum y coordinates
+// Magnitude distance between vectors
 func (v *Vector) Magnitude() float64 {
 	coordinatePowSum := 0.0
 	for _, coordinate := range v.Coordinates {
@@ -106,4 +106,21 @@ func (v *Vector) Magnitude() float64 {
 	return math.Sqrt(coordinatePowSum)
 }
 
-// Direction
+// Normalization operation to get the unit vector (A unit vector has length equal to 1)
+// and still keep the direction to the original vector,
+// a magnitude of a unit vector is always equal to 1
+func (v *Vector) Normalization() []float64 {
+	magnitude := v.Magnitude()
+	unitVector := []float64{}
+	for _, coordinate := range v.Coordinates {
+		unitCoord := (1 / magnitude) * coordinate
+		unitVector = append(unitVector, unitCoord)
+	}
+	return unitVector
+}
+
+// Direction canonical representation of a vector direction,
+// is the same as getting the unit vector
+func (v *Vector) Direction() []float64 {
+	return v.Normalization()
+}
