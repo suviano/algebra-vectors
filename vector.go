@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 /*
 try:
@@ -16,10 +19,11 @@ except ValueError:
 // IVector vectors common algebra operations interface
 type IVector interface {
 	Str() string
-	Sum(addendVector Vector)
-	Minus(vector Vector)
-	Multiply(scalar float64)
+	Sum(addendVector Vector) Vector
+	Minus(vector Vector) Vector
+	Multiply(scalar float64) Vector
 	Equals(vector Vector) bool
+	Magnitude(point1, point2 []float64) float64
 }
 
 // Vector is the structure data to represent a algebra vector
@@ -66,26 +70,40 @@ func multiDimensionVectorIterator(v1, v2 *Vector, operation func(float64, float6
 }
 
 // Sum vector algebra sum operation
-func (v *Vector) Sum(addendVector Vector) {
+func (v *Vector) Sum(addendVector Vector) Vector {
 	operation := func(augendCoordinate float64, addendCoordinate float64) float64 {
 		return augendCoordinate + addendCoordinate
 	}
 	multiDimensionVectorIterator(v, &addendVector, operation)
+	return Vector{Coordinates: v.Coordinates}
 }
 
 // Minus vectors algebra subtraction operation
-func (v *Vector) Minus(subtrahendVector Vector) {
+func (v *Vector) Minus(subtrahendVector Vector) Vector {
 	operation := func(minuendCoordinate float64, subtrahendCoordinate float64) float64 {
 		return minuendCoordinate - subtrahendCoordinate
 	}
 	multiDimensionVectorIterator(v, &subtrahendVector, operation)
+	return Vector{Coordinates: v.Coordinates}
 }
 
 // Multiply vector multiply algebra operation
-func (v *Vector) Multiply(scalar float64) {
+func (v *Vector) Multiply(scalar float64) Vector {
 	newCoordinates := []float64{}
 	for _, coordinate := range v.Coordinates {
 		newCoordinates = append(newCoordinates, coordinate*scalar)
 	}
 	v.Coordinates = newCoordinates
+	return Vector{Coordinates: newCoordinates}
 }
+
+// Magnitude distance between the x coordinates sum y coordinates
+func (v *Vector) Magnitude() float64 {
+	coordinatePowSum := 0.0
+	for _, coordinate := range v.Coordinates {
+		coordinatePowSum += math.Pow(coordinate, 2)
+	}
+	return math.Sqrt(coordinatePowSum)
+}
+
+// Direction

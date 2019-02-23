@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"math"
+	"testing"
+)
 
 func TestVectorStr(t *testing.T) {
 	t.Run("ExpectingTheRightCoordinates", func(t *testing.T) {
@@ -119,7 +123,7 @@ func TestVectorMultiply(t *testing.T) {
 	})
 
 	t.Run("VectorsMultiplyDecimalNumber", func(t *testing.T) {
-		vector := Vector{Coordinates: []float64{1.671, -1.012, -0.318}}
+		vector := Vector{Coordinates: []float64{1.671, -1.012, -.318}}
 
 		vector.Multiply(7.41)
 
@@ -128,4 +132,34 @@ func TestVectorMultiply(t *testing.T) {
 			t.Errorf("method 'Multiply' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
 		}
 	})
+}
+
+func TestVectorMagnitude(t *testing.T) {
+	t.Run("VectorMagnitudeScenarioOne", func(t *testing.T) {
+		vector := Vector{Coordinates: []float64{-.221, 7.437}}
+		magnitude := vector.Magnitude()
+		if "7.440" != fmt.Sprintf("%.3f", magnitude) {
+			t.Errorf("method 'Magnitude' has returned %f expecting %f", math.Abs(magnitude), math.Abs(7.440283))
+		}
+	})
+
+	t.Run("VectorMagnitudeScenarioTwo", func(t *testing.T) {
+		vector := Vector{Coordinates: []float64{8.813, -1.331, -6.247}}
+		magnitude := vector.Magnitude()
+		if "10.884" != fmt.Sprintf("%.3f", magnitude) {
+			t.Errorf("method 'Magnitude' has returned %f expected %f", math.Abs(magnitude), math.Abs(10.884188))
+		}
+	})
+}
+
+func TestVectorDirection(t *testing.T) {
+	// t.Run("VectorMagnitudeScenarioThree", func(t *testing.T) {
+	// 	vector := Vector{Coordinates: []float64{5.581, -2.136}}
+	// 	vector.Magnitude()
+	// })
+
+	// t.Run("VectorMagnitudeScenarioFour", func(t *testing.T) {
+	// 	vector := Vector{Coordinates: []float64{1.996, 3.108, -4.554}}
+	// 	vector.Magnitude()
+	// })
 }
