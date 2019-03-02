@@ -167,8 +167,33 @@ func TestVectorDirection(t *testing.T) {
 		vector := Vector{Coordinates: []float64{1.996, 3.108, -4.554}}
 		unitVector := Vector{Coordinates: vector.Direction()}
 		unitVectorMagnitude := unitVector.Magnitude()
-		if fmt.Sprintf("%0.f", unitVectorMagnitude) != "1" {
+		if fmt.Sprintf("%.0f", unitVectorMagnitude) != "1" {
 			t.Errorf(unitVectorErrMsg, unitVectorMagnitude)
+		}
+	})
+}
+
+func TestDotProduct(t *testing.T) {
+	t.Run("WithSameDimension", func(t *testing.T) {
+		v1 := Vector{Coordinates: []float64{1, 2, -1}}
+		v2 := Vector{Coordinates: []float64{3, 1, 0}}
+		result := DotProduct(v1, v2)
+		fResult := fmt.Sprintf("%.3f", result)
+		if fResult != "5.000" {
+			t.Errorf("expecting 5 got %s", fResult)
+		}
+	})
+}
+
+func TestAngleBetweenVectors(t *testing.T) {
+	t.Run("Scenario1", func(t *testing.T) {
+		v1 := Vector{Coordinates: []float64{1, 2, -1}}
+		v2 := Vector{Coordinates: []float64{3, 1, 0}}
+
+		angleRad := AngleBetweenVectors(v1, v2)
+		angleRadFormated := fmt.Sprintf("%.2f", angleRad)
+		if angleRadFormated != "0.87" {
+			t.Errorf("expecting angle to be 0.87 rad found %s", angleRadFormated)
 		}
 	})
 }

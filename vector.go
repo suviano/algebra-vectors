@@ -5,17 +5,6 @@ import (
 	"math"
 )
 
-/*
-try:
-    if not coordinates:
-        raise ValueError
-    self.coordinates = tuple(coordinates)
-    self.dimension = len(coordinates)
-
-except ValueError:
-    raise ValueError('The coordinates must be nonempty')
-*/
-
 // IVector vectors common algebra operations interface
 type IVector interface {
 	Str() string
@@ -24,11 +13,18 @@ type IVector interface {
 	Multiply(scalar float64) Vector
 	Equals(vector Vector) bool
 	Magnitude(point1, point2 []float64) float64
+	Direction() []float64
+	DotProduct(v1, v2 Vector)
 }
 
 // Vector is the structure data to represent a algebra vector
 type Vector struct {
 	Coordinates []float64
+}
+
+// Dimensions of a existing vector
+func (v *Vector) Dimensions() int {
+	return len(v.Coordinates)
 }
 
 // Equals vectors algebra equality comparison
@@ -123,4 +119,42 @@ func (v *Vector) Normalization() []float64 {
 // is the same as getting the unit vector
 func (v *Vector) Direction() []float64 {
 	return v.Normalization()
+}
+
+func normalizeVectors(v1, v2 Vector) int {
+	v1Dimension := v1.Dimensions()
+	v2Dimension := v2.Dimensions()
+	if v1Dimension > v2Dimension {
+		v2Diff := int(math.Copysign(float64(v2Dimension-v1Dimension), 1))
+		for index := 0; index < v2Diff; index++ {
+			v2.Coordinates = append(v2.Coordinates, 0)
+		}
+	} else if v1Dimension < v2Dimension {
+		v1Diff := int(math.Copysign(float64(v1Dimension-v2Dimension), 1))
+		for index := 0; index < v1Diff; index++ {
+			v1.Coordinates = append(v1.Coordinates, 0)
+		}
+	}
+
+	return v1.Dimensions()
+}
+
+// DotProduct product of two vector multiplication
+func DotProduct(v1, v2 Vector) float64 {
+	dimensions := normalizeVectors(v1, v2)
+
+	var response float64
+	for index := 0; index < dimensions; index++ {
+		response += (v1.Coordinates[index] * v2.Coordinates[index])
+	}
+
+	return response
+}
+
+// AngleBetweenVectors calculates the angle two vectors via dot product
+func AngleBetweenVectors(v1, v2 Vector) float64 {
+	dotProductValue := DotProduct(v1, v2)
+	v1Magnitude := math.Copysign(v1.Magnitude(), 1)
+	v2Magnitude := math.Copysign(v2.Magnitude(), 1)
+	return math.Acos(dotProductValue / (v1Magnitude * v2Magnitude))
 }
