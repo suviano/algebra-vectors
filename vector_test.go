@@ -177,7 +177,7 @@ func TestDotProduct(t *testing.T) {
 	t.Run("WithSameDimension", func(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{1, 2, -1}}
 		v2 := Vector{Coordinates: []float64{3, 1, 0}}
-		result := DotProduct(v1, v2)
+		result := v1.DotProduct(v2)
 		fResult := fmt.Sprintf("%.3f", result)
 		if fResult != "5.000" {
 			t.Errorf("expecting 5 got %s", fResult)
@@ -190,10 +190,80 @@ func TestAngleBetweenVectors(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{1, 2, -1}}
 		v2 := Vector{Coordinates: []float64{3, 1, 0}}
 
-		angleRad := AngleBetweenVectors(v1, v2)
+		angleRad := v1.AngleWith(v2, false)
 		angleRadFormated := fmt.Sprintf("%.2f", angleRad)
 		if angleRadFormated != "0.87" {
 			t.Errorf("expecting angle to be 0.87 rad found %s", angleRadFormated)
+		}
+	})
+}
+
+func TestOrthogonalTo(t *testing.T) {
+	t.Run("Scenario1", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{-7.579, -7.88}}
+		vector2 := Vector{Coordinates: []float64{22.737, 23.64}}
+		isOrthogonal := vector1.IsOrthogonalTo(vector2)
+		if isOrthogonal {
+			t.Error("expecting not to be orthogonal")
+		}
+	})
+	t.Run("Scenario2", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{-2.029, 9.97, 4.172}}
+		vector2 := Vector{Coordinates: []float64{-9.231, -6.639, -7.245}}
+		isOrthogonal := vector1.IsOrthogonalTo(vector2)
+		if isOrthogonal {
+			t.Error("expecting not to be orthogonal")
+		}
+	})
+	t.Run("Scenario3", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{-2.328, -7.284, -1.214}}
+		vector2 := Vector{Coordinates: []float64{-1.821, 1.072, -2.94}}
+		isOrthogonal := vector1.IsOrthogonalTo(vector2)
+		if !isOrthogonal {
+			t.Error("expecting to be orthogonal")
+		}
+	})
+	t.Run("Scenario4", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{2.118, 4.827}}
+		vector2 := Vector{Coordinates: []float64{0, 0}}
+		isOrthogonal := vector1.IsOrthogonalTo(vector2)
+		if !isOrthogonal {
+			t.Error("expecting to be orthogonal")
+		}
+	})
+}
+
+func TestParalelTo(t *testing.T) {
+	t.Run("Scenario1", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{-7.579, -7.88}}
+		vector2 := Vector{Coordinates: []float64{22.737, 23.64}}
+		isParallel := vector1.IsParallelTo(vector2)
+		if !isParallel {
+			t.Error("expecting to be parallel")
+		}
+	})
+	t.Run("Scenario2", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{-2.029, 9.97, 4.172}}
+		vector2 := Vector{Coordinates: []float64{-9.231, -6.639, -7.245}}
+		isParallel := vector1.IsParallelTo(vector2)
+		if isParallel {
+			t.Error("expecting not to be parallel")
+		}
+	})
+	t.Run("Scenario3", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{-2.328, -7.284, -1.214}}
+		vector2 := Vector{Coordinates: []float64{-1.821, 1.072, -2.94}}
+		isParallel := vector1.IsParallelTo(vector2)
+		if isParallel {
+			t.Error("expecting not to be parallel")
+		}
+	})
+	t.Run("Scenario4", func(t *testing.T) {
+		vector1 := Vector{Coordinates: []float64{2.118, 4.827}}
+		vector2 := Vector{Coordinates: []float64{0, 0}}
+		isParallel := vector1.IsParallelTo(vector2)
+		if !isParallel {
+			t.Error("expecting to be parallel")
 		}
 	})
 }

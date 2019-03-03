@@ -15,6 +15,9 @@ type IVector interface {
 	Magnitude(point1, point2 []float64) float64
 	Direction() []float64
 	DotProduct(v1, v2 Vector)
+	AngleWith(vector Vector, inDegrees bool) float64
+	IsOrthogonalTo(vector Vector) bool
+	IsParallelTo(vector Vector) bool
 }
 
 // Vector is the structure data to represent a algebra vector
@@ -121,40 +124,61 @@ func (v *Vector) Direction() []float64 {
 	return v.Normalization()
 }
 
-func normalizeVectors(v1, v2 Vector) int {
-	v1Dimension := v1.Dimensions()
-	v2Dimension := v2.Dimensions()
+func (v *Vector) normalizeVectors(vector Vector) int {
+	v1Dimension := v.Dimensions()
+	v2Dimension := vector.Dimensions()
 	if v1Dimension > v2Dimension {
 		v2Diff := int(math.Copysign(float64(v2Dimension-v1Dimension), 1))
 		for index := 0; index < v2Diff; index++ {
-			v2.Coordinates = append(v2.Coordinates, 0)
+			vector.Coordinates = append(vector.Coordinates, 0)
 		}
 	} else if v1Dimension < v2Dimension {
 		v1Diff := int(math.Copysign(float64(v1Dimension-v2Dimension), 1))
 		for index := 0; index < v1Diff; index++ {
-			v1.Coordinates = append(v1.Coordinates, 0)
+			v.Coordinates = append(v.Coordinates, 0)
 		}
 	}
 
-	return v1.Dimensions()
+	return v.Dimensions()
 }
 
 // DotProduct product of two vector multiplication
-func DotProduct(v1, v2 Vector) float64 {
-	dimensions := normalizeVectors(v1, v2)
+func (v *Vector) DotProduct(vector Vector) float64 {
+	dimensions := v.normalizeVectors(vector)
 
 	var response float64
 	for index := 0; index < dimensions; index++ {
-		response += (v1.Coordinates[index] * v2.Coordinates[index])
+		response += (v.Coordinates[index] * vector.Coordinates[index])
 	}
 
 	return response
 }
 
-// AngleBetweenVectors calculates the angle two vectors via dot product
-func AngleBetweenVectors(v1, v2 Vector) float64 {
-	dotProductValue := DotProduct(v1, v2)
-	v1Magnitude := math.Copysign(v1.Magnitude(), 1)
-	v2Magnitude := math.Copysign(v2.Magnitude(), 1)
-	return math.Acos(dotProductValue / (v1Magnitude * v2Magnitude))
+// AngleWith calculates the angle two vectors via dot product
+func (v *Vector) AngleWith(vector Vector, inDegrees bool) float64 {
+	dotProductValue := v.DotProduct(vector)
+	v1Magnitude := math.Copysign(v.Magnitude(), 1)
+	v2Magnitude := math.Copysign(vector.Magnitude(), 1)
+	angleRad := math.Acos(dotProductValue / (v1Magnitude * v2Magnitude))
+	if inDegrees {
+		return RadToDegree(angleRad)
+	}
+	return angleRad
+}
+
+// IsOrthogonalTo verify if a vector is orthogonal to another
+func (v *Vector) IsOrthogonalTo(vector Vector) bool {
+	dotProduct := math.Copysign(v.DotProduct(vector), 1)
+	tolerance := 1e-10
+	return dotProduct < tolerance
+}
+
+// IsParallelTo verify if a vector is pararel to another
+func (v *Vector) IsParallelTo(vector Vector) bool {
+	tolerance := 1e-10
+	if v.Magnitude() < tolerance || vector.Magnitude() < tolerance {
+		return true
+	}
+	angleBetweenVectors := v.AngleWith(vector, false)
+	return angleBetweenVectors == 0 || angleBetweenVectors == math.Pi
 }
