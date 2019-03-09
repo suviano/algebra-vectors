@@ -324,8 +324,42 @@ func TestOrthogonal(t *testing.T) {
 	})
 }
 
-/*
-v	b
-[3.009,-6.172,3.692,-2.51]	[6.404,-9.144,2.759,8.718] decompose the vector????
-scenario3 [1.969,-2.811,.848,2.680] [1.040,-3.361,-5.190]
-*/
+func TestDecomponseVector(t *testing.T) {
+	// scenario3 [] [1.040,-3.361,-5.190]
+	v1 := Vector{Coordinates: []float64{3.009, -6.172, 3.692, -2.51}}
+	v2 := Vector{Coordinates: []float64{6.404, -9.144, 2.759, 8.718}}
+
+	projectionParallel := v1.Project(v2)
+
+	expectedSliceParallel := []float64{1.969, -2.811, .848, 2.680}
+	if len(projectionParallel.Coordinates) <= 0 {
+		t.Errorf("empty projection coordinates")
+	}
+
+	for index, coordinate := range projectionParallel.Coordinates {
+		rounderCoord := fmt.Sprintf("%.3f", coordinate)
+		if rounderCoord != fmt.Sprintf("%.3f", expectedSliceParallel[index]) {
+			t.Errorf("expecting %+v to be equal %+v", projectionParallel.Coordinates, expectedSliceParallel)
+			break
+		}
+	}
+
+	projectionOrthogonal := v1.Orthogonal(v2)
+
+	if len(projectionOrthogonal.Coordinates) <= 0 {
+		t.Errorf("empty projection coordinates")
+	}
+
+	expectedSliceOrthogonal := []float64{1.04, -3.361, 2.844, -5.19}
+	for index, coordinate := range projectionOrthogonal.Coordinates {
+		rounderCoord := fmt.Sprintf("%.3f", coordinate)
+		if rounderCoord != fmt.Sprintf("%.3f", expectedSliceOrthogonal[index]) {
+			t.Errorf("expecting %+v to be equal %+v", projectionOrthogonal.Coordinates, expectedSliceOrthogonal)
+			break
+		}
+	}
+
+	if !projectionOrthogonal.IsOrthogonalTo(v2) {
+		t.Errorf("expecint %+v to be orthogonal to %+v", projectionOrthogonal, v2)
+	}
+}
