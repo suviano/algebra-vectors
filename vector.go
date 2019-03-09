@@ -10,14 +10,16 @@ type IVector interface {
 	Str() string
 	Sum(addendVector Vector) Vector
 	Minus(vector Vector) Vector
-	Multiply(scalar float64) Vector
+	Scalar(scalar float64) Vector
 	Equals(vector Vector) bool
 	Magnitude(point1, point2 []float64) float64
-	Direction() []float64
-	DotProduct(v1, v2 Vector)
+	Normalization() []float64
+	Dot(v1, v2 Vector)
 	AngleWith(vector Vector, inDegrees bool) float64
-	IsOrthogonalTo(vector Vector) bool
 	IsParallelTo(vector Vector) bool
+	IsOrthogonalTo(vector Vector) bool
+	Project(vector Vector) Vector
+	Orthogonal(vector Vector) Vector
 }
 
 // Vector is the structure data to represent a algebra vector
@@ -86,8 +88,8 @@ func (v *Vector) Minus(subtrahendVector Vector) Vector {
 	return Vector{Coordinates: v.Coordinates}
 }
 
-// Multiply vector multiply algebra operation
-func (v *Vector) Multiply(scalar float64) Vector {
+// Scalar vector multiply algebra operation
+func (v *Vector) Scalar(scalar float64) Vector {
 	newCoordinates := []float64{}
 	for _, coordinate := range v.Coordinates {
 		newCoordinates = append(newCoordinates, coordinate*scalar)
@@ -108,23 +110,18 @@ func (v *Vector) Magnitude() float64 {
 // Normalization operation to get the unit vector (A unit vector has length equal to 1)
 // and still keep the direction to the original vector,
 // a magnitude of a unit vector is always equal to 1
-func (v *Vector) Normalization() []float64 {
-	magnitude := v.Magnitude()
+// returns the "Direction"
+func (v *Vector) Normalization() Vector {
 	unitVector := []float64{}
-	for _, coordinate := range v.Coordinates {
-		unitCoord := (1 / magnitude) * coordinate
-		unitVector = append(unitVector, unitCoord)
+	magnitude := v.Magnitude()
+	if magnitude == 0 {
+		return Vector{Coordinates: unitVector}
 	}
-	return unitVector
+
+	return Vector{Coordinates: v.Scalar(1. / magnitude).Coordinates}
 }
 
-// Direction canonical representation of a vector direction,
-// is the same as getting the unit vector
-func (v *Vector) Direction() []float64 {
-	return v.Normalization()
-}
-
-func (v *Vector) normalizeVectors(vector Vector) int {
+func (v *Vector) adjustDimensions(vector Vector) int {
 	v1Dimension := v.Dimensions()
 	v2Dimension := vector.Dimensions()
 	if v1Dimension > v2Dimension {
@@ -142,9 +139,9 @@ func (v *Vector) normalizeVectors(vector Vector) int {
 	return v.Dimensions()
 }
 
-// DotProduct product of two vector multiplication
-func (v *Vector) DotProduct(vector Vector) float64 {
-	dimensions := v.normalizeVectors(vector)
+// Dot product of two vector multiplication
+func (v *Vector) Dot(vector Vector) float64 {
+	dimensions := v.adjustDimensions(vector)
 
 	var response float64
 	for index := 0; index < dimensions; index++ {
@@ -156,10 +153,11 @@ func (v *Vector) DotProduct(vector Vector) float64 {
 
 // AngleWith calculates the angle two vectors via dot product
 func (v *Vector) AngleWith(vector Vector, inDegrees bool) float64 {
-	dotProductValue := v.DotProduct(vector)
+	dotProductValue := v.Dot(vector)
 	v1Magnitude := math.Copysign(v.Magnitude(), 1)
 	v2Magnitude := math.Copysign(vector.Magnitude(), 1)
-	angleRad := math.Acos(dotProductValue / (v1Magnitude * v2Magnitude))
+	magnitudeProduct := v1Magnitude * v2Magnitude
+	angleRad := math.Acos(dotProductValue / magnitudeProduct)
 	if inDegrees {
 		return RadToDegree(angleRad)
 	}
@@ -168,7 +166,7 @@ func (v *Vector) AngleWith(vector Vector, inDegrees bool) float64 {
 
 // IsOrthogonalTo verify if a vector is orthogonal to another
 func (v *Vector) IsOrthogonalTo(vector Vector) bool {
-	dotProduct := math.Copysign(v.DotProduct(vector), 1)
+	dotProduct := math.Copysign(v.Dot(vector), 1)
 	tolerance := 1e-10
 	return dotProduct < tolerance
 }
@@ -181,4 +179,33 @@ func (v *Vector) IsParallelTo(vector Vector) bool {
 	}
 	angleBetweenVectors := v.AngleWith(vector, false)
 	return angleBetweenVectors == 0 || angleBetweenVectors == math.Pi
+}
+
+func (v *Vector) componentParalletTo(vector Vector) Vector {
+	v.adjustDimensions(vector)
+
+	vectorNormalization := vector.Normalization()
+	weight := v.Dot(vectorNormalization)
+	return vectorNormalization.Scalar(weight)
+}
+
+// Project execute the projection of an vector to another
+func (v *Vector) Project(vector Vector) Vector {
+	// v.adjustDimensions(vector)
+	// product := v.Dot(vector)
+	// magnitude := product / vector.Magnitude()
+	// normalization := vector.Normalization()
+	// return normalization.Scalar(magnitude)
+	return v.componentParalletTo(vector)
+}
+
+// componentOrthogonalTo
+func (v *Vector) componentOrthogonalTo(vector Vector) Vector {
+	projection := v.componentParalletTo(vector)
+	return v.Minus(projection)
+}
+
+// Orthogonal return a vector orthogonal to vector argument in relation from the other vector
+func (v *Vector) Orthogonal(vector Vector) Vector {
+	return v.componentOrthogonalTo(vector)
 }
