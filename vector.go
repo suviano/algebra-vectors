@@ -223,24 +223,14 @@ func (v *Vector) CrossProduct(vector Vector) Vector {
 	return Vector{}
 }
 
-// ParallelogramArea
+// ParallelogramArea the area from two vectors paralellogram
 func (v *Vector) ParallelogramArea(vector Vector) float64 {
-	return 0
+	product := v.CrossProduct(vector)
+	return product.Magnitude()
 }
 
-// TriangleArea
+// TriangleArea half size of the area from two vectors paralellogram
 func (v *Vector) TriangleArea(vector Vector) float64 {
-	return 0
+	product := v.CrossProduct(vector)
+	return product.Magnitude() / 2
 }
-
-// all these for a vector of 3 dimensions
-//
-// cross product
-// area of parallelogram
-// area of triangle
-
-/**
-[8.462, 7.893, -8.187] [6.984, -5.975, 4.778] -> v*w
-[-8.987, -9.838, 5.031] [-4.268,-1.861, -8.866] -> area parallelogram
-[1.5, 9.547, 3.691] [-6.007, 0.124, 5.772] -> are triangle
-*/

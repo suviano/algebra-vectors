@@ -365,10 +365,7 @@ func TestDecomponseVector(t *testing.T) {
 }
 
 func TestCrossProduct(t *testing.T) {
-	t.Run("Scenario1", func(t *testing.T) {
-		v1 := Vector{Coordinates: []float64{5, 3, -2}}
-		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
-
+	baseScenario := func(t *testing.T, v1, v2, expectedVector Vector) {
 		product := v1.CrossProduct(v2)
 
 		xCoord := product.Coordinates[0]
@@ -393,12 +390,37 @@ func TestCrossProduct(t *testing.T) {
 		if !product.IsOrthogonalTo(v2) {
 			t.Errorf("cross product result should be orthogonal to v2")
 		}
+	}
+
+	t.Run("Scenario1", func(t *testing.T) {
+		v1 := Vector{Coordinates: []float64{5, 3, -2}}
+		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
+		baseScenario(t, v1, v2, Vector{Coordinates: []float64{9, -13, 3}})
+	})
+
+	t.Run("Scenario2", func(t *testing.T) {
+		v1 := Vector{Coordinates: []float64{8.462, 7.893, -8.187}}
+		v2 := Vector{Coordinates: []float64{6.984, -5.975, 4.778}}
+		baseScenario(t, v1, v2, Vector{Coordinates: []float64{9, -13, 3}})
 	})
 }
 
 func TestParallelogramArea(t *testing.T) {
+	v1 := Vector{Coordinates: []float64{-8.987, -9.838, 5.031}}
+	v2 := Vector{Coordinates: []float64{-4.268, -1.861, -8.866}}
+	area := v1.ParallelogramArea(v2)
 
+	if fmt.Sprintf("%.3f", area) != "1.000" {
+		t.Errorf("Expecting 1.0 found %.3f", area)
+	}
 }
-func TestTriangleArea(t *testing.T) {
 
+func TestTriangleArea(t *testing.T) {
+	v1 := Vector{Coordinates: []float64{1.5, 9.547, 3.691}}
+	v2 := Vector{Coordinates: []float64{-6.007, 0.124, 5.772}}
+	area := v1.TriangleArea(v2)
+
+	if fmt.Sprintf("%.3f", area) != "1.000" {
+		t.Errorf("Expecting 1.0 found %.3f", area)
+	}
 }
