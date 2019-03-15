@@ -363,3 +363,42 @@ func TestDecomponseVector(t *testing.T) {
 		t.Errorf("expecint %+v to be orthogonal to %+v", projectionOrthogonal, v2)
 	}
 }
+
+func TestCrossProduct(t *testing.T) {
+	t.Run("Scenario1", func(t *testing.T) {
+		v1 := Vector{Coordinates: []float64{5, 3, -2}}
+		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
+
+		product := v1.CrossProduct(v2)
+
+		xCoord := product.Coordinates[0]
+		if fmt.Sprintf("%.3f", xCoord) != "9.000" {
+			t.Errorf("x coordinate should be %.3f got 9.000", xCoord)
+		}
+
+		yCoord := product.Coordinates[1]
+		if fmt.Sprintf("%.3f", yCoord) != "-13.000" {
+			t.Errorf("x coordinate should be %.3f got -13.000", yCoord)
+		}
+
+		zCoord := product.Coordinates[2]
+		if fmt.Sprintf("%.3f", zCoord) != "3.000" {
+			t.Errorf("x coordinate should be %.3f got 3.000", zCoord)
+		}
+
+		if !product.IsOrthogonalTo(v1) {
+			t.Errorf("cross product result should be orthogonal to v1")
+		}
+
+		if !product.IsOrthogonalTo(v2) {
+			t.Errorf("cross product result should be orthogonal to v2")
+		}
+	})
+}
+
+func TestParallelogramArea(t *testing.T) {
+
+}
+func TestTriangleArea(t *testing.T) {
+
+}

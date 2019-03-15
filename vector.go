@@ -20,6 +20,8 @@ type IVector interface {
 	IsOrthogonalTo(vector Vector) bool
 	Project(vector Vector) Vector
 	Orthogonal(vector Vector) Vector
+	CrossProduct(vector Vector) Vector
+	AreaParallelogram(vector Vector)
 }
 
 // Vector is the structure data to represent a algebra vector
@@ -209,3 +211,36 @@ func (v *Vector) componentOrthogonalTo(vector Vector) Vector {
 func (v *Vector) Orthogonal(vector Vector) Vector {
 	return v.componentOrthogonalTo(vector)
 }
+
+// CrossProduct operation to calculate a vector orthogonal to two vectors
+func (v *Vector) CrossProduct(vector Vector) Vector {
+	if v.Dimensions() == 3 && v.Dimensions() == 3 {
+		return Vector{Coordinates: []float64{
+			(v.Coordinates[1] * vector.Coordinates[2]) - (vector.Coordinates[1] * v.Coordinates[2]),
+			-1 * ((v.Coordinates[0] * vector.Coordinates[2]) - (vector.Coordinates[0] * v.Coordinates[2])),
+			(v.Coordinates[0] * vector.Coordinates[1]) - (vector.Coordinates[0] * v.Coordinates[1])}}
+	}
+	return Vector{}
+}
+
+// ParallelogramArea
+func (v *Vector) ParallelogramArea(vector Vector) float64 {
+	return 0
+}
+
+// TriangleArea
+func (v *Vector) TriangleArea(vector Vector) float64 {
+	return 0
+}
+
+// all these for a vector of 3 dimensions
+//
+// cross product
+// area of parallelogram
+// area of triangle
+
+/**
+[8.462, 7.893, -8.187] [6.984, -5.975, 4.778] -> v*w
+[-8.987, -9.838, 5.031] [-4.268,-1.861, -8.866] -> area parallelogram
+[1.5, 9.547, 3.691] [-6.007, 0.124, 5.772] -> are triangle
+*/
