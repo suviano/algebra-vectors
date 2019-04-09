@@ -10,3 +10,11 @@
 
 /vendor/
 /Godeps/
+
+venv/
+
+.vscode
+
+debug
+
+.idea/
