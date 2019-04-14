@@ -22,6 +22,7 @@ type IVector interface {
 	Orthogonal(vector Vector) Vector
 	CrossProduct(vector Vector) Vector
 	AreaParallelogram(vector Vector)
+	IsZero() bool
 }
 
 // Vector is the structure data to represent a algebra vector
@@ -55,7 +56,7 @@ func (v *Vector) Str() string {
 
 func multiDimensionVectorIterator(v1, v2 *Vector, operation func(float64, float64) float64) {
 	secondVectorLen := len(v2.Coordinates)
-	newCoordinates := []float64{}
+	var newCoordinates []float64
 	for index, coordinate := range v1.Coordinates {
 		var secondCoordinate float64
 		if secondVectorLen-1 >= index {
@@ -92,7 +93,7 @@ func (v *Vector) Minus(subtrahendVector Vector) Vector {
 
 // Scalar vector multiply algebra operation
 func (v *Vector) Scalar(scalar float64) Vector {
-	newCoordinates := []float64{}
+	var newCoordinates []float64
 	for _, coordinate := range v.Coordinates {
 		newCoordinates = append(newCoordinates, coordinate*scalar)
 	}
@@ -114,7 +115,7 @@ func (v *Vector) Magnitude() float64 {
 // a magnitude of a unit vector is always equal to 1
 // returns the "Direction"
 func (v *Vector) Normalization() Vector {
-	unitVector := []float64{}
+	var unitVector []float64
 	magnitude := v.Magnitude()
 	if magnitude == 0 {
 		return Vector{Coordinates: unitVector}
@@ -147,7 +148,7 @@ func (v *Vector) Dot(vector Vector) float64 {
 
 	var response float64
 	for index := 0; index < dimensions; index++ {
-		response += (v.Coordinates[index] * vector.Coordinates[index])
+		response += v.Coordinates[index] * vector.Coordinates[index]
 	}
 
 	return response
@@ -173,17 +174,18 @@ func (v *Vector) IsOrthogonalTo(vector Vector) bool {
 	return dotProduct < tolerance
 }
 
-// IsParallelTo verify if a vector is pararel to another
+// IsParallelTo verify if a vector is parallel to another
 func (v *Vector) IsParallelTo(vector Vector) bool {
 	tolerance := 1e-10
 	if v.Magnitude() < tolerance || vector.Magnitude() < tolerance {
 		return true
 	}
 	angleBetweenVectors := v.AngleWith(vector, false)
-	return angleBetweenVectors == 0 || angleBetweenVectors == math.Pi
+	// Nan is a valid return for an parallel comparison???
+	return angleBetweenVectors == 0 || angleBetweenVectors == math.Pi || math.IsNaN(angleBetweenVectors)
 }
 
-func (v *Vector) componentParalletTo(vector Vector) Vector {
+func (v *Vector) componentParallelTo(vector Vector) Vector {
 	v.adjustDimensions(vector)
 
 	vectorNormalization := vector.Normalization()
@@ -198,12 +200,12 @@ func (v *Vector) Project(vector Vector) Vector {
 	// magnitude := product / vector.Magnitude()
 	// normalization := vector.Normalization()
 	// return normalization.Scalar(magnitude)
-	return v.componentParalletTo(vector)
+	return v.componentParallelTo(vector)
 }
 
 // componentOrthogonalTo
 func (v *Vector) componentOrthogonalTo(vector Vector) Vector {
-	projection := v.componentParalletTo(vector)
+	projection := v.componentParallelTo(vector)
 	return v.Minus(projection)
 }
 
@@ -223,14 +225,22 @@ func (v *Vector) CrossProduct(vector Vector) Vector {
 	return Vector{}
 }
 
-// ParallelogramArea the area from two vectors paralellogram
+// ParallelogramArea the area from two vectors parallelogram
 func (v *Vector) ParallelogramArea(vector Vector) float64 {
 	product := v.CrossProduct(vector)
 	return product.Magnitude()
 }
 
-// TriangleArea half size of the area from two vectors paralellogram
+// TriangleArea half size of the area from two vectors parallelogram
 func (v *Vector) TriangleArea(vector Vector) float64 {
 	product := v.CrossProduct(vector)
 	return product.Magnitude() / 2
+}
+
+func (v *Vector) IsZero() bool {
+	coordinatesSum := 0.0
+	for _, coordinate := range v.Coordinates {
+		coordinatesSum += coordinate
+	}
+	return coordinatesSum == 0
 }

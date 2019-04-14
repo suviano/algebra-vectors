@@ -7,10 +7,6 @@ import (
 	"strings"
 )
 
-// TODO determine if two lines are parallel
-// TODO determine if two lines are equal
-// TODO determine the intersection of two lines
-
 // NoNonzeroEltsFoundMsg standard message for no zero element available
 const NoNonzeroEltsFoundMsg = "no nonzero elements found"
 
@@ -20,6 +16,8 @@ type ILine interface {
 	Initialize(Vector, float64) error
 	Str() string
 	SetBasePoint()
+	IsParallel(line Line) bool
+	IsEqual(line Line) bool
 }
 
 // Line line algebra structure representation
@@ -38,7 +36,7 @@ func (l *Line) Initialize(normalVector Vector, constantTerm float64) error {
 	l.Dimensions = 2
 
 	if len(l.NormalVector.Coordinates) == 0 {
-		allZeros := make([]float64, 2)
+		var allZeros []float64
 
 		for index := 0; index < l.Dimensions; index++ {
 			allZeros = append(allZeros, 0)
@@ -54,7 +52,7 @@ func (l *Line) Initialize(normalVector Vector, constantTerm float64) error {
 
 // SetBasePoint define the base point from a vector
 func (l *Line) SetBasePoint() error {
-	basePointCoords := make([]float64, 2)
+	var basePointCoords []float64
 	for index := 0; index < l.Dimensions; index++ {
 		basePointCoords = append(basePointCoords, 0)
 	}
@@ -121,7 +119,7 @@ func (l *Line) Str() string {
 		log.Fatalf("creating the string representation of an line causes the error %+v", err)
 	}
 
-	terms := make([]string, l.Dimensions)
+	var terms []string
 	for index := 0; index < l.Dimensions; index++ {
 		if SetPrecision(n.Coordinates[index], numDecimalPlaces) > 0 {
 			coefficientResult := writeCoefficient(n.Coordinates[index], index == int(initialIndex))
@@ -139,6 +137,54 @@ func (l *Line) Str() string {
 
 // IsParallel verify if two lines are parallel
 func (l *Line) IsParallel(line Line) bool {
-	// pick two coordinates from the first line other two from the other
-	return false
+	return l.NormalVector.IsParallelTo(line.NormalVector)
+}
+
+// IsEqual verify if two lines are equal
+func (l *Line) IsEqual(line Line) bool {
+	if l.NormalVector.IsZero() {
+		if !line.NormalVector.IsZero() {
+			return false
+		} else {
+			diff := l.ConstantTerm - line.ConstantTerm
+			return diff == 0
+		}
+	} else if line.NormalVector.IsZero() {
+		return false
+	}
+
+	if !l.IsParallel(line) {
+		return false
+	}
+
+	b1 := l.BasePoint
+	b2 := line.BasePoint
+
+	basePointDiff := b1.Minus(b2)
+	n := l.NormalVector
+	return basePointDiff.IsOrthogonalTo(n)
+}
+
+func (l *Line) IntersectWith(line Line) (Vector, error) {
+	if len(l.NormalVector.Coordinates) != 2 {
+		return Vector{}, fmt.Errorf("line1 must be have two dimenstions\n")
+	}
+	A := l.NormalVector.Coordinates[0]
+	B := l.NormalVector.Coordinates[1]
+
+	if len(line.NormalVector.Coordinates) != 2 {
+		return Vector{}, fmt.Errorf("line2 must have two dimenstions\n")
+	}
+	C := line.NormalVector.Coordinates[0]
+	D := line.NormalVector.Coordinates[1]
+
+	k1 := l.ConstantTerm
+	k2 := line.ConstantTerm
+
+	xNumerator := (D * k1) - (B * k2)
+	yNumerator := (-C * k1) + (A * k2)
+	oneOverDenominator := 1 / ((A * D) - (B * C))
+
+	v := Vector{Coordinates: []float64{xNumerator, yNumerator}}
+	return v.Scalar(oneOverDenominator), nil
 }

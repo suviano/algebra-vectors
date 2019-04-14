@@ -191,9 +191,9 @@ func TestAngleBetweenVectors(t *testing.T) {
 		v2 := Vector{Coordinates: []float64{3, 1, 0}}
 
 		angleRad := v1.AngleWith(v2, false)
-		angleRadFormated := fmt.Sprintf("%.2f", angleRad)
-		if angleRadFormated != "0.87" {
-			t.Errorf("expecting angle to be 0.87 rad found %s", angleRadFormated)
+		angleRadFormatted := fmt.Sprintf("%.2f", angleRad)
+		if angleRadFormatted != "0.87" {
+			t.Errorf("expecting angle to be 0.87 rad found %s", angleRadFormatted)
 		}
 	})
 }
@@ -233,7 +233,7 @@ func TestOrthogonalTo(t *testing.T) {
 	})
 }
 
-func TestParalelTo(t *testing.T) {
+func TestParallelTo(t *testing.T) {
 	t.Run("Scenario1", func(t *testing.T) {
 		vector1 := Vector{Coordinates: []float64{-7.579, -7.88}}
 		vector2 := Vector{Coordinates: []float64{22.737, 23.64}}
@@ -324,7 +324,7 @@ func TestOrthogonal(t *testing.T) {
 	})
 }
 
-func TestDecomponseVector(t *testing.T) {
+func TestDecomposeVector(t *testing.T) {
 	// scenario3 [] [1.040,-3.361,-5.190]
 	v1 := Vector{Coordinates: []float64{3.009, -6.172, 3.692, -2.51}}
 	v2 := Vector{Coordinates: []float64{6.404, -9.144, 2.759, 8.718}}

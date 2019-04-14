@@ -16,23 +16,27 @@ func SetPrecision(number float64, precision int) float64 {
 	return resultNumber
 }
 
-func splitFlagCoordinates(coord string) (coordinates []float64, err error) {
+func splitFlagCoordinates(coord string) ([]float64, error) {
+	var coordinates []float64
+	var err error
 	coordinatesString := strings.Split(coord, ",")
 	for index, coordinateString := range coordinatesString {
-		coordinate, err := strconv.ParseFloat(coordinateString, 64)
+		var coordinate float64
+		coordinate, err = strconv.ParseFloat(coordinateString, 64)
 		if err != nil {
 			coordErrMsg := fmt.Sprintf("invalid flag in %d position", index)
 			err = errors.Wrap(err, coordErrMsg)
-		} else {
-			coordinates = append(coordinates, coordinate)
+			break
 		}
+
+		coordinates = append(coordinates, coordinate)
 	}
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("[splitFlagCoordinates] flag '%s' is invalid", coord))
 	}
 
-	return
+	return coordinates, err
 }
 
 // RadToDegree Convert radiant to degrees
