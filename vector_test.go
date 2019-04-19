@@ -365,21 +365,21 @@ func TestDecomposeVector(t *testing.T) {
 }
 
 func TestCrossProduct(t *testing.T) {
-	baseScenario := func(t *testing.T, v1, v2, expectedVector Vector) {
+	baseScenario := func(t *testing.T, v1, v2 Vector, expectedValues []string) {
 		product := v1.CrossProduct(v2)
 
 		xCoord := product.Coordinates[0]
-		if fmt.Sprintf("%.3f", xCoord) != "9.000" {
+		if fmt.Sprintf("%.3f", xCoord) != expectedValues[0] {
 			t.Errorf("x coordinate should be %.3f got 9.000", xCoord)
 		}
 
 		yCoord := product.Coordinates[1]
-		if fmt.Sprintf("%.3f", yCoord) != "-13.000" {
+		if fmt.Sprintf("%.3f", yCoord) != expectedValues[1] {
 			t.Errorf("x coordinate should be %.3f got -13.000", yCoord)
 		}
 
 		zCoord := product.Coordinates[2]
-		if fmt.Sprintf("%.3f", zCoord) != "3.000" {
+		if fmt.Sprintf("%.3f", zCoord) != expectedValues[2] {
 			t.Errorf("x coordinate should be %.3f got 3.000", zCoord)
 		}
 
@@ -395,13 +395,13 @@ func TestCrossProduct(t *testing.T) {
 	t.Run("Scenario1", func(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{5, 3, -2}}
 		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
-		baseScenario(t, v1, v2, Vector{Coordinates: []float64{9, -13, 3}})
+		baseScenario(t, v1, v2, []string{"9", "-13", "3"})
 	})
 
 	t.Run("Scenario2", func(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{8.462, 7.893, -8.187}}
 		v2 := Vector{Coordinates: []float64{6.984, -5.975, 4.778}}
-		baseScenario(t, v1, v2, Vector{Coordinates: []float64{9, -13, 3}})
+		baseScenario(t, v1, v2, []string{"-11.205", "-97.609", "-105.685"})
 	})
 }
 
@@ -410,7 +410,7 @@ func TestParallelogramArea(t *testing.T) {
 	v2 := Vector{Coordinates: []float64{-4.268, -1.861, -8.866}}
 	area := v1.ParallelogramArea(v2)
 
-	if fmt.Sprintf("%.3f", area) != "1.000" {
+	if fmt.Sprintf("%.3f", area) != "142.122" {
 		t.Errorf("Expecting 1.0 found %.3f", area)
 	}
 }
@@ -420,7 +420,7 @@ func TestTriangleArea(t *testing.T) {
 	v2 := Vector{Coordinates: []float64{-6.007, 0.124, 5.772}}
 	area := v1.TriangleArea(v2)
 
-	if fmt.Sprintf("%.3f", area) != "1.000" {
+	if fmt.Sprintf("%.3f", area) != "42.565" {
 		t.Errorf("Expecting 1.0 found %.3f", area)
 	}
 }
