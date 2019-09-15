@@ -370,17 +370,17 @@ func TestCrossProduct(t *testing.T) {
 
 		xCoord := product.Coordinates[0]
 		if fmt.Sprintf("%.3f", xCoord) != expectedValues[0] {
-			t.Errorf("x coordinate should be %.3f got 9.000", xCoord)
+			t.Errorf("x coordinate should be %.3f got %s", xCoord, expectedValues[0])
 		}
 
 		yCoord := product.Coordinates[1]
 		if fmt.Sprintf("%.3f", yCoord) != expectedValues[1] {
-			t.Errorf("x coordinate should be %.3f got -13.000", yCoord)
+			t.Errorf("x coordinate should be %.3f got %s", yCoord, expectedValues[1])
 		}
 
 		zCoord := product.Coordinates[2]
 		if fmt.Sprintf("%.3f", zCoord) != expectedValues[2] {
-			t.Errorf("x coordinate should be %.3f got 3.000", zCoord)
+			t.Errorf("x coordinate should be %.3f got %s", zCoord, expectedValues[2])
 		}
 
 		if !product.IsOrthogonalTo(v1) {
@@ -395,7 +395,7 @@ func TestCrossProduct(t *testing.T) {
 	t.Run("Scenario1", func(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{5, 3, -2}}
 		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
-		baseScenario(t, v1, v2, []string{"9", "-13", "3"})
+		baseScenario(t, v1, v2, []string{"9.000", "-13.000", "3.000"})
 	})
 
 	t.Run("Scenario2", func(t *testing.T) {
