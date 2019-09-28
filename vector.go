@@ -35,17 +35,34 @@ func (v *Vector) Dimensions() int {
 	return len(v.Coordinates)
 }
 
+// CoordinateLengthNorm increase a number of dimensions of an vector
+func (v *Vector) CoordinateLengthNorm(lengthDifference float64) {
+	diff := int(math.Abs(lengthDifference))
+	for index := 0; index < diff; index++ {
+		v.Coordinates = append(v.Coordinates, 0)
+	}
+}
+
 // Equals vectors algebra equality comparison
 func (v *Vector) Equals(vector Vector) bool {
 	// return self.coordinates == v.coordinates
 	if len(vector.Coordinates) != len(v.Coordinates) {
-		return false
+		difference := float64(len(vector.Coordinates) - len(v.Coordinates))
+		if difference < 0 {
+			vector.CoordinateLengthNorm(difference)
+		}
+
+		if difference > 0 {
+			v.CoordinateLengthNorm(difference)
+		}
 	}
+
 	for index, coordinate := range v.Coordinates {
 		if coordinate != vector.Coordinates[index] {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -237,6 +254,7 @@ func (v *Vector) TriangleArea(vector Vector) float64 {
 	return product.Magnitude() / 2
 }
 
+// IsZero assert if a vectors is the point zero
 func (v *Vector) IsZero() bool {
 	coordinatesSum := 0.0
 	for _, coordinate := range v.Coordinates {

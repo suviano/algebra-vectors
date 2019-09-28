@@ -4,46 +4,71 @@ import (
 	"fmt"
 	"math"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestVectorStr(t *testing.T) {
-	t.Run("ExpectingTheRightCoordinates", func(t *testing.T) {
+	Convey("Expecting the right coordinates", t, func() {
 		mVector := Vector{
 			Coordinates: []float64{12, 33, 666},
 		}
 
 		receivedVectorStr := mVector.Str()
-		if receivedVectorStr != "Vector: [12 33 666]" {
-			t.Errorf("Received unexpected string message: %s", receivedVectorStr)
+		Convey("Received unexpected string message: "+receivedVectorStr, func() {
+			So(receivedVectorStr, ShouldEqual, "Vector: [12 33 666]")
+		})
+	})
+
+	Convey("Empty coordinates are acceptable", t, func() {
+		mVector := Vector{
+			Coordinates: []float64{},
 		}
+
+		receivedVectorStr := mVector.Str()
+		Convey("Received empty string for this vector", func() {
+			So(receivedVectorStr, ShouldEqual, "Vector: []")
+		})
 	})
 }
 
 func TestVectorEquals(t *testing.T) {
-	t.Run("DifferentVectorSizesWithDifferentValues", func(t *testing.T) {
-		v1 := Vector{Coordinates: []float64{1, 2}}
-		v2 := Vector{Coordinates: []float64{1, 2, 3}}
-		isEqual := v1.Equals(v2)
-		if isEqual {
-			t.Errorf("method 'Equals' has return true, but %s is different from %s", v1.Str(), v2.Str())
-		}
-	})
-	t.Run("DifferentVectorWithDifferentValues", func(t *testing.T) {
+	Convey("Different Vector Sizes With Different Values", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{1, 3}}
-		isEqual := v1.Equals(v2)
-		if isEqual {
-			t.Errorf("method 'Equals' has return true, but %s is different from %s", v1.Str(), v2.Str())
-		}
+		So(v1.Equals(v2), ShouldBeFalse)
 	})
 
-	t.Run("EqualVector", func(t *testing.T) {
+	Convey("Simply equal vectors", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{1, 2}}
-		isEqual := v1.Equals(v2)
-		if !isEqual {
-			t.Errorf("method 'Equals' has return false, but %s is represent the same vector as %s", v1.Str(), v2.Str())
-		}
+		So(v1.Equals(v2), ShouldBeTrue)
+	})
+
+	Convey("Equal vectors with different sizes", t, func() {
+		Convey("Equal vectors small dimensions difference", func() {
+			v1 := Vector{Coordinates: []float64{1, 2, 0}}
+			v2 := Vector{Coordinates: []float64{1, 2}}
+			So(v1.Equals(v2), ShouldBeTrue)
+		})
+
+		Convey("Not equal first vector having more dimensions than the first", func() {
+			v1 := Vector{Coordinates: []float64{1, 2, 0, 0}}
+			v2 := Vector{Coordinates: []float64{2, 3}}
+			So(v1.Equals(v2), ShouldBeFalse)
+		})
+
+		Convey("Equal vectors huge dimensions difference", func() {
+			v1 := Vector{Coordinates: []float64{1, 2, 0, 0, 0}}
+			v2 := Vector{Coordinates: []float64{1, 2}}
+			So(v1.Equals(v2), ShouldBeTrue)
+		})
+
+		Convey("Equal vectors second vector has more dimensions than the first", func() {
+			v1 := Vector{Coordinates: []float64{1, 2}}
+			v2 := Vector{Coordinates: []float64{1, 2, 0, 0}}
+			So(v1.Equals(v2), ShouldBeTrue)
+		})
 	})
 }
 

@@ -21,7 +21,7 @@ type Plane struct {
 	NormalVector Vector
 	ConstantTerm float64
 	BasePoint    Vector
-})
+}
 
 // Initialize a plane struct
 func (p *Plane) Initialize(normalVector Vector, constantTerm float64) error {
