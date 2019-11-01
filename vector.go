@@ -8,10 +8,10 @@ import (
 // IVector vectors common algebra operations interface
 type IVector interface {
 	Str() string
+	Equals(vector Vector) bool
 	Sum(addendVector Vector) Vector
 	Minus(vector Vector) Vector
 	Scalar(scalar float64) Vector
-	Equals(vector Vector) bool
 	Magnitude(point1, point2 []float64) float64
 	Normalization() []float64
 	Dot(v1, v2 Vector)
@@ -28,6 +28,11 @@ type IVector interface {
 // Vector is the structure data to represent a algebra vector
 type Vector struct {
 	Coordinates []float64
+}
+
+// Str vector coordinates string format visualization
+func (v *Vector) Str() string {
+	return fmt.Sprintf("Vector: %v", v.Coordinates)
 }
 
 // Dimensions of a existing vector
@@ -66,11 +71,6 @@ func (v *Vector) Equals(vector Vector) bool {
 	return true
 }
 
-// Str vector coordinates string format visualization
-func (v *Vector) Str() string {
-	return fmt.Sprintf("Vector: %v", v.Coordinates)
-}
-
 func multiDimensionVectorIterator(v1, v2 *Vector, operation func(float64, float64) float64) {
 	secondVectorLen := len(v2.Coordinates)
 	var newCoordinates []float64
@@ -90,7 +90,7 @@ func multiDimensionVectorIterator(v1, v2 *Vector, operation func(float64, float6
 	v1.Coordinates = newCoordinates
 }
 
-// Sum vector algebra sum operation
+// Sum vector addition operation
 func (v *Vector) Sum(addendVector Vector) Vector {
 	operation := func(augendCoordinate float64, addendCoordinate float64) float64 {
 		return augendCoordinate + addendCoordinate

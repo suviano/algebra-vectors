@@ -73,28 +73,24 @@ func TestVectorEquals(t *testing.T) {
 }
 
 func TestVectorSum(t *testing.T) {
-	t.Run("VectorsSum", func(t *testing.T) {
+	Convey("Addition of vectors with same dimentions", t, func() {
 		v1 := Vector{Coordinates: []float64{8.218, -9.341}}
 		v2 := Vector{Coordinates: []float64{-1.129, 2.111}}
 
 		v1.Sum(v2)
 
 		expectedSumVector := Vector{Coordinates: []float64{7.089, -7.229999999999999}}
-		if !v1.Equals(expectedSumVector) {
-			t.Errorf("method 'Sum' has returned %s while the expected is %s", v1.Str(), expectedSumVector.Str())
-		}
+		So(v1.Equals(expectedSumVector), ShouldBeTrue)
 	})
 
-	t.Run("VectorsSumWithDifferentSizes", func(t *testing.T) {
+	Convey("Addition of vectors with different sizes", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{4, 5, 6}}
 
 		v1.Sum(v2)
 
 		expectedSumVector := Vector{Coordinates: []float64{5, 7, 6}}
-		if !v1.Equals(expectedSumVector) {
-			t.Errorf("method 'Sum' has returned %s while the expected is %s", v1.Str(), expectedSumVector.Str())
-		}
+		So(v1.Equals(expectedSumVector), ShouldBeTrue)
 	})
 }
 
