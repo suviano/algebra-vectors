@@ -4,72 +4,93 @@ import (
 	"fmt"
 	"math"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestVectorStr(t *testing.T) {
-	t.Run("ExpectingTheRightCoordinates", func(t *testing.T) {
+	Convey("Expecting the right coordinates", t, func() {
 		mVector := Vector{
 			Coordinates: []float64{12, 33, 666},
 		}
 
 		receivedVectorStr := mVector.Str()
-		if receivedVectorStr != "Vector: [12 33 666]" {
-			t.Errorf("Received unexpected string message: %s", receivedVectorStr)
+		Convey("Received unexpected string message: "+receivedVectorStr, func() {
+			So(receivedVectorStr, ShouldEqual, "Vector: [12 33 666]")
+		})
+	})
+
+	Convey("Empty coordinates are acceptable", t, func() {
+		mVector := Vector{
+			Coordinates: []float64{},
 		}
+
+		receivedVectorStr := mVector.Str()
+		Convey("Received empty string for this vector", func() {
+			So(receivedVectorStr, ShouldEqual, "Vector: []")
+		})
 	})
 }
 
 func TestVectorEquals(t *testing.T) {
-	t.Run("DifferentVectorSizesWithDifferentValues", func(t *testing.T) {
-		v1 := Vector{Coordinates: []float64{1, 2}}
-		v2 := Vector{Coordinates: []float64{1, 2, 3}}
-		isEqual := v1.Equals(v2)
-		if isEqual {
-			t.Errorf("method 'Equals' has return true, but %s is different from %s", v1.Str(), v2.Str())
-		}
-	})
-	t.Run("DifferentVectorWithDifferentValues", func(t *testing.T) {
+	Convey("Different Vector Sizes With Different Values", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{1, 3}}
-		isEqual := v1.Equals(v2)
-		if isEqual {
-			t.Errorf("method 'Equals' has return true, but %s is different from %s", v1.Str(), v2.Str())
-		}
+		So(v1.Equals(v2), ShouldBeFalse)
 	})
 
-	t.Run("EqualVector", func(t *testing.T) {
+	Convey("Simply equal vectors", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{1, 2}}
-		isEqual := v1.Equals(v2)
-		if !isEqual {
-			t.Errorf("method 'Equals' has return false, but %s is represent the same vector as %s", v1.Str(), v2.Str())
-		}
+		So(v1.Equals(v2), ShouldBeTrue)
+	})
+
+	Convey("Equal vectors with different sizes", t, func() {
+		Convey("Equal vectors small dimensions difference", func() {
+			v1 := Vector{Coordinates: []float64{1, 2, 0}}
+			v2 := Vector{Coordinates: []float64{1, 2}}
+			So(v1.Equals(v2), ShouldBeTrue)
+		})
+
+		Convey("Not equal first vector having more dimensions than the first", func() {
+			v1 := Vector{Coordinates: []float64{1, 2, 0, 0}}
+			v2 := Vector{Coordinates: []float64{2, 3}}
+			So(v1.Equals(v2), ShouldBeFalse)
+		})
+
+		Convey("Equal vectors huge dimensions difference", func() {
+			v1 := Vector{Coordinates: []float64{1, 2, 0, 0, 0}}
+			v2 := Vector{Coordinates: []float64{1, 2}}
+			So(v1.Equals(v2), ShouldBeTrue)
+		})
+
+		Convey("Equal vectors second vector has more dimensions than the first", func() {
+			v1 := Vector{Coordinates: []float64{1, 2}}
+			v2 := Vector{Coordinates: []float64{1, 2, 0, 0}}
+			So(v1.Equals(v2), ShouldBeTrue)
+		})
 	})
 }
 
 func TestVectorSum(t *testing.T) {
-	t.Run("VectorsSum", func(t *testing.T) {
+	Convey("Addition of vectors with same dimentions", t, func() {
 		v1 := Vector{Coordinates: []float64{8.218, -9.341}}
 		v2 := Vector{Coordinates: []float64{-1.129, 2.111}}
 
 		v1.Sum(v2)
 
 		expectedSumVector := Vector{Coordinates: []float64{7.089, -7.229999999999999}}
-		if !v1.Equals(expectedSumVector) {
-			t.Errorf("method 'Sum' has returned %s while the expected is %s", v1.Str(), expectedSumVector.Str())
-		}
+		So(v1.Equals(expectedSumVector), ShouldBeTrue)
 	})
 
-	t.Run("VectorsSumWithDifferentSizes", func(t *testing.T) {
+	Convey("Addition of vectors with different sizes", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{4, 5, 6}}
 
 		v1.Sum(v2)
 
 		expectedSumVector := Vector{Coordinates: []float64{5, 7, 6}}
-		if !v1.Equals(expectedSumVector) {
-			t.Errorf("method 'Sum' has returned %s while the expected is %s", v1.Str(), expectedSumVector.Str())
-		}
+		So(v1.Equals(expectedSumVector), ShouldBeTrue)
 	})
 }
 
@@ -365,22 +386,22 @@ func TestDecomposeVector(t *testing.T) {
 }
 
 func TestCrossProduct(t *testing.T) {
-	baseScenario := func(t *testing.T, v1, v2, expectedVector Vector) {
+	baseScenario := func(t *testing.T, v1, v2 Vector, expectedValues []string) {
 		product := v1.CrossProduct(v2)
 
 		xCoord := product.Coordinates[0]
-		if fmt.Sprintf("%.3f", xCoord) != "9.000" {
-			t.Errorf("x coordinate should be %.3f got 9.000", xCoord)
+		if fmt.Sprintf("%.3f", xCoord) != expectedValues[0] {
+			t.Errorf("x coordinate should be %.3f got %s", xCoord, expectedValues[0])
 		}
 
 		yCoord := product.Coordinates[1]
-		if fmt.Sprintf("%.3f", yCoord) != "-13.000" {
-			t.Errorf("x coordinate should be %.3f got -13.000", yCoord)
+		if fmt.Sprintf("%.3f", yCoord) != expectedValues[1] {
+			t.Errorf("x coordinate should be %.3f got %s", yCoord, expectedValues[1])
 		}
 
 		zCoord := product.Coordinates[2]
-		if fmt.Sprintf("%.3f", zCoord) != "3.000" {
-			t.Errorf("x coordinate should be %.3f got 3.000", zCoord)
+		if fmt.Sprintf("%.3f", zCoord) != expectedValues[2] {
+			t.Errorf("x coordinate should be %.3f got %s", zCoord, expectedValues[2])
 		}
 
 		if !product.IsOrthogonalTo(v1) {
@@ -395,13 +416,13 @@ func TestCrossProduct(t *testing.T) {
 	t.Run("Scenario1", func(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{5, 3, -2}}
 		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
-		baseScenario(t, v1, v2, Vector{Coordinates: []float64{9, -13, 3}})
+		baseScenario(t, v1, v2, []string{"9.000", "-13.000", "3.000"})
 	})
 
 	t.Run("Scenario2", func(t *testing.T) {
 		v1 := Vector{Coordinates: []float64{8.462, 7.893, -8.187}}
 		v2 := Vector{Coordinates: []float64{6.984, -5.975, 4.778}}
-		baseScenario(t, v1, v2, Vector{Coordinates: []float64{9, -13, 3}})
+		baseScenario(t, v1, v2, []string{"-11.205", "-97.609", "-105.685"})
 	})
 }
 
@@ -410,7 +431,7 @@ func TestParallelogramArea(t *testing.T) {
 	v2 := Vector{Coordinates: []float64{-4.268, -1.861, -8.866}}
 	area := v1.ParallelogramArea(v2)
 
-	if fmt.Sprintf("%.3f", area) != "1.000" {
+	if fmt.Sprintf("%.3f", area) != "142.122" {
 		t.Errorf("Expecting 1.0 found %.3f", area)
 	}
 }
@@ -420,7 +441,7 @@ func TestTriangleArea(t *testing.T) {
 	v2 := Vector{Coordinates: []float64{-6.007, 0.124, 5.772}}
 	area := v1.TriangleArea(v2)
 
-	if fmt.Sprintf("%.3f", area) != "1.000" {
+	if fmt.Sprintf("%.3f", area) != "42.565" {
 		t.Errorf("Expecting 1.0 found %.3f", area)
 	}
 }

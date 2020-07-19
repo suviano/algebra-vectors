@@ -165,15 +165,16 @@ func (l *Line) IsEqual(line Line) bool {
 	return basePointDiff.IsOrthogonalTo(n)
 }
 
+// IntersectWith check if line 1 insect line 2
 func (l *Line) IntersectWith(line Line) (Vector, error) {
 	if len(l.NormalVector.Coordinates) != 2 {
-		return Vector{}, fmt.Errorf("line1 must be have two dimenstions\n")
+		return Vector{}, fmt.Errorf("line1 must be have two dimenstions")
 	}
 	A := l.NormalVector.Coordinates[0]
 	B := l.NormalVector.Coordinates[1]
 
 	if len(line.NormalVector.Coordinates) != 2 {
-		return Vector{}, fmt.Errorf("line2 must have two dimenstions\n")
+		return Vector{}, fmt.Errorf("line2 must have two dimenstions")
 	}
 	C := line.NormalVector.Coordinates[0]
 	D := line.NormalVector.Coordinates[1]
