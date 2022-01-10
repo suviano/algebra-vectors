@@ -95,294 +95,232 @@ func TestVectorSum(t *testing.T) {
 }
 
 func TestVectorMinus(t *testing.T) {
-	t.Run("VectorsMinus", func(t *testing.T) {
+	Convey("VectorsMinus", t, func() {
 		v1 := Vector{Coordinates: []float64{7.119, 8.215}}
 		v2 := Vector{Coordinates: []float64{-8.223, .878}}
 
 		v1.Minus(v2)
 
 		expectedDifferenceVector := Vector{Coordinates: []float64{15.342, 7.337}}
-		if !v1.Equals(expectedDifferenceVector) {
-			t.Errorf("method 'Minus' has returned %s while the expected is %s", v1.Str(), expectedDifferenceVector.Str())
-		}
+		So(v1.Equals(expectedDifferenceVector), ShouldBeTrue)
 	})
 
-	t.Run("VectorsMinusWithDifferentSizes", func(t *testing.T) {
+	Convey("VectorsMinusWithDifferentSizes", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2}}
 		v2 := Vector{Coordinates: []float64{4, 5, 6}}
 
 		v1.Minus(v2)
 
 		expectedDifferenceVector := Vector{Coordinates: []float64{-3, -3, 6}}
-		if !v1.Equals(expectedDifferenceVector) {
-			t.Errorf("method 'Minus' has returned %s while the expected is %s", v1.Str(), expectedDifferenceVector.Str())
-		}
+		So(v1.Equals(expectedDifferenceVector), ShouldBeTrue)
 	})
 }
 
 func TestVectorScalar(t *testing.T) {
-	t.Run("VectorsMultiplyPositiveNumber", func(t *testing.T) {
+	Convey("VectorsMultiplyPositiveNumber", t, func() {
 		vector := Vector{Coordinates: []float64{1, 2}}
 
 		vector.Scalar(2)
 
 		expectedProductVector := Vector{Coordinates: []float64{2, 4}}
-		if !vector.Equals(expectedProductVector) {
-			t.Errorf("method 'Scalar' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
-		}
+		So(vector.Equals(expectedProductVector), ShouldBeTrue)
 	})
 
-	t.Run("VectorsMultiplyNegativeNumber", func(t *testing.T) {
+	Convey("VectorsMultiplyNegativeNumber", t, func() {
 		vector := Vector{Coordinates: []float64{1, 2}}
 
 		vector.Scalar(-2)
 
 		expectedProductVector := Vector{Coordinates: []float64{-2, -4}}
-		if !vector.Equals(expectedProductVector) {
-			t.Errorf("method 'Scalar' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
-		}
+		So(vector.Equals(expectedProductVector), ShouldBeTrue)
 	})
 
-	t.Run("VectorsMultiplyDecimalNumber", func(t *testing.T) {
+	Convey("VectorsMultiplyDecimalNumber", t, func() {
 		vector := Vector{Coordinates: []float64{1.671, -1.012, -.318}}
 
 		vector.Scalar(7.41)
 
 		expectedProductVector := Vector{Coordinates: []float64{12.38211, -7.49892, -2.35638}}
-		if !vector.Equals(expectedProductVector) {
-			t.Errorf("method 'Scalar' has returned %s while the expected is %s", vector.Str(), expectedProductVector.Str())
-		}
+		So(vector.Equals(expectedProductVector), ShouldBeTrue)
 	})
 }
 
 func TestVectorMagnitude(t *testing.T) {
-	t.Run("VectorMagnitudeScenarioOne", func(t *testing.T) {
+	Convey(fmt.Sprintf("VectorMagnitudeScenarioOne 'Magnitude' expected %f", math.Abs(7.440283)), t, func() {
 		vector := Vector{Coordinates: []float64{-.221, 7.437}}
 		magnitude := vector.Magnitude()
-		if "7.440" != fmt.Sprintf("%.3f", magnitude) {
-			t.Errorf("method 'Magnitude' has returned %f expecting %f", math.Abs(magnitude), math.Abs(7.440283))
-		}
+		So(fmt.Sprintf("%.3f", magnitude), ShouldEqual, "7.440")
 	})
 
-	t.Run("VectorMagnitudeScenarioTwo", func(t *testing.T) {
+	Convey(fmt.Sprintf("VectorMagnitudeScenarioTwo 'Magnitude' has expected %f", math.Abs(10.884188)), t, func() {
 		vector := Vector{Coordinates: []float64{8.813, -1.331, -6.247}}
 		magnitude := vector.Magnitude()
-		if "10.884" != fmt.Sprintf("%.3f", magnitude) {
-			t.Errorf("method 'Magnitude' has returned %f expected %f", math.Abs(magnitude), math.Abs(10.884188))
-		}
+		So(fmt.Sprintf("%.3f", magnitude), ShouldEqual, "10.884")
 	})
 }
 
 func TestVectorNormalization(t *testing.T) {
-	unitVectorErrMsg := "Direction should have a vector of 1 has %.0f"
-	t.Run("VectorNormalizationScenarioOne", func(t *testing.T) {
+	Convey("VectorNormalizationScenarioOne", t, func() {
 		unitVector := Vector{Coordinates: []float64{5.581, -2.136}}
 		unitVectorNormalization := unitVector.Normalization()
 		magnitude := unitVectorNormalization.Magnitude()
-		if fmt.Sprintf("%.0f", magnitude) != "1" {
-			t.Errorf(unitVectorErrMsg, magnitude)
-		}
+
+		So(fmt.Sprintf("%.0f", magnitude), ShouldEqual, "1")
 	})
 
-	t.Run("VectorNormalizationScenarioTwo", func(t *testing.T) {
+	Convey("VectorNormalizationScenarioTwo", t, func() {
 		unitVector := Vector{Coordinates: []float64{1.996, 3.108, -4.554}}
 		unitVectorNormalization := unitVector.Normalization()
 		magnitude := unitVectorNormalization.Magnitude()
-		if fmt.Sprintf("%.0f", magnitude) != "1" {
-			t.Errorf(unitVectorErrMsg, magnitude)
-		}
+
+		So(fmt.Sprintf("%.0f", magnitude), ShouldEqual, "1")
 	})
 }
 
 func TestDotProduct(t *testing.T) {
-	t.Run("WithSameDimension", func(t *testing.T) {
+	Convey("WithSameDimension: expecting 5", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2, -1}}
 		v2 := Vector{Coordinates: []float64{3, 1, 0}}
 		result := v1.Dot(v2)
 		fResult := fmt.Sprintf("%.3f", result)
-		if fResult != "5.000" {
-			t.Errorf("expecting 5 got %s", fResult)
-		}
+		So(fResult, ShouldEqual, "5.000")
 	})
 }
 
 func TestAngleBetweenVectors(t *testing.T) {
-	t.Run("Scenario1", func(t *testing.T) {
+	Convey("Scenario1 expecting angle to be 0.87 rad", t, func() {
 		v1 := Vector{Coordinates: []float64{1, 2, -1}}
 		v2 := Vector{Coordinates: []float64{3, 1, 0}}
 
 		angleRad := v1.AngleWith(v2, false)
 		angleRadFormatted := fmt.Sprintf("%.2f", angleRad)
-		if angleRadFormatted != "0.87" {
-			t.Errorf("expecting angle to be 0.87 rad found %s", angleRadFormatted)
-		}
+		So(angleRadFormatted, ShouldEqual, "0.87")
 	})
 }
 
 func TestOrthogonalTo(t *testing.T) {
-	t.Run("Scenario1", func(t *testing.T) {
-		vector1 := Vector{Coordinates: []float64{-7.579, -7.88}}
-		vector2 := Vector{Coordinates: []float64{22.737, 23.64}}
-		isOrthogonal := vector1.IsOrthogonalTo(vector2)
-		if isOrthogonal {
-			t.Error("expecting not to be orthogonal")
-		}
+	Convey("expecting to not be orthogonal", t, func() {
+		Convey("Scenario1", func() {
+			vector1 := Vector{Coordinates: []float64{-7.579, -7.88}}
+			vector2 := Vector{Coordinates: []float64{22.737, 23.64}}
+			isOrthogonal := vector1.IsOrthogonalTo(vector2)
+			So(isOrthogonal, ShouldBeFalse)
+		})
+
+		Convey("Scenario2", func() {
+			vector1 := Vector{Coordinates: []float64{-2.029, 9.97, 4.172}}
+			vector2 := Vector{Coordinates: []float64{-9.231, -6.639, -7.245}}
+			isOrthogonal := vector1.IsOrthogonalTo(vector2)
+			So(isOrthogonal, ShouldBeFalse)
+		})
 	})
-	t.Run("Scenario2", func(t *testing.T) {
-		vector1 := Vector{Coordinates: []float64{-2.029, 9.97, 4.172}}
-		vector2 := Vector{Coordinates: []float64{-9.231, -6.639, -7.245}}
-		isOrthogonal := vector1.IsOrthogonalTo(vector2)
-		if isOrthogonal {
-			t.Error("expecting not to be orthogonal")
-		}
-	})
-	t.Run("Scenario3", func(t *testing.T) {
-		vector1 := Vector{Coordinates: []float64{-2.328, -7.284, -1.214}}
-		vector2 := Vector{Coordinates: []float64{-1.821, 1.072, -2.94}}
-		isOrthogonal := vector1.IsOrthogonalTo(vector2)
-		if !isOrthogonal {
-			t.Error("expecting to be orthogonal")
-		}
-	})
-	t.Run("Scenario4", func(t *testing.T) {
-		vector1 := Vector{Coordinates: []float64{2.118, 4.827}}
-		vector2 := Vector{Coordinates: []float64{0, 0}}
-		isOrthogonal := vector1.IsOrthogonalTo(vector2)
-		if !isOrthogonal {
-			t.Error("expecting to be orthogonal")
-		}
+	Convey("expecting to be orthogonal", t, func() {
+		Convey("Scenario1", func() {
+			vector1 := Vector{Coordinates: []float64{-2.328, -7.284, -1.214}}
+			vector2 := Vector{Coordinates: []float64{-1.821, 1.072, -2.94}}
+			isOrthogonal := vector1.IsOrthogonalTo(vector2)
+			So(isOrthogonal, ShouldBeTrue)
+		})
+
+		Convey("Scenario2", func() {
+			vector1 := Vector{Coordinates: []float64{2.118, 4.827}}
+			vector2 := Vector{Coordinates: []float64{0, 0}}
+			isOrthogonal := vector1.IsOrthogonalTo(vector2)
+			So(isOrthogonal, ShouldBeTrue)
+		})
 	})
 }
 
 func TestParallelTo(t *testing.T) {
-	t.Run("Scenario1", func(t *testing.T) {
+	Convey("Scenario1IsParallel", t, func() {
 		vector1 := Vector{Coordinates: []float64{-7.579, -7.88}}
 		vector2 := Vector{Coordinates: []float64{22.737, 23.64}}
-
 		isParallel := vector1.IsParallelTo(vector2)
-
-		if !isParallel {
-			t.Error("expecting to be parallel")
-		}
+		So(isParallel, ShouldBeTrue)
 	})
-	t.Run("Scenario2", func(t *testing.T) {
+	Convey("Scenario2IsntParallel", t, func() {
 		vector1 := Vector{Coordinates: []float64{-2.029, 9.97, 4.172}}
 		vector2 := Vector{Coordinates: []float64{-9.231, -6.639, -7.245}}
-
 		isParallel := vector1.IsParallelTo(vector2)
-
-		if isParallel {
-			t.Error("expecting not to be parallel")
-		}
+		So(isParallel, ShouldBeFalse)
 	})
-	t.Run("Scenario3", func(t *testing.T) {
+	Convey("Scenario3IsntParallel", t, func() {
 		vector1 := Vector{Coordinates: []float64{-2.328, -7.284, -1.214}}
 		vector2 := Vector{Coordinates: []float64{-1.821, 1.072, -2.94}}
-
 		isParallel := vector1.IsParallelTo(vector2)
-
-		if isParallel {
-			t.Error("expecting not to be parallel")
-		}
+		So(isParallel, ShouldBeFalse)
 	})
-	t.Run("Scenario4", func(t *testing.T) {
+	Convey("Scenario4IsParallel", t, func() {
 		vector1 := Vector{Coordinates: []float64{2.118, 4.827}}
 		vector2 := Vector{Coordinates: []float64{0, 0}}
-
 		isParallel := vector1.IsParallelTo(vector2)
-
-		if !isParallel {
-			t.Error("expecting to be parallel")
-		}
+		So(isParallel, ShouldBeTrue)
 	})
 }
 
 func TestProject(t *testing.T) {
-	t.Run("CommonScenario1", func(t *testing.T) {
+	Convey("CommonScenario1", t, func() {
 		v1 := Vector{Coordinates: []float64{3.039, 1.879}}
 		v2 := Vector{Coordinates: []float64{.825, 2.036}}
 
 		projection := v1.Project(v2)
 
 		expectedSlice := []float64{1.083, 2.672}
-		if len(projection.Coordinates) <= 0 {
-			t.Errorf("empty projection coordinates")
-		}
-
+		So(len(projection.Coordinates), ShouldBeGreaterThanOrEqualTo, 0)
 		for index, coordinate := range projection.Coordinates {
 			rounderCoord := fmt.Sprintf("%.3f", coordinate)
-			if rounderCoord != fmt.Sprintf("%.3f", expectedSlice[index]) {
-				t.Errorf("expecting %+v to be equal %+v", projection.Coordinates, expectedSlice)
-				break
-			}
+			So(rounderCoord, ShouldEqual, fmt.Sprintf("%.3f", expectedSlice[index]))
 		}
 	})
 }
 
 func TestOrthogonal(t *testing.T) {
-	t.Run("CommonScenario1", func(t *testing.T) {
+	Convey("CommonScenario1", t, func() {
 		v1 := Vector{Coordinates: []float64{-9.88, -3.264, -8.159}}
 		v2 := Vector{Coordinates: []float64{-2.155, -9.353, -9.473}}
 
 		projection := v1.Orthogonal(v2)
-
-		if len(projection.Coordinates) <= 0 {
-			t.Errorf("empty projection coordinates")
-		}
+		So(len(projection.Coordinates), ShouldBeGreaterThanOrEqualTo, 0)
 
 		expectedSlice := []float64{-8.350, 3.376, -1.434}
 		for index, coordinate := range projection.Coordinates {
 			rounderCoord := fmt.Sprintf("%.3f", coordinate)
-			if rounderCoord != fmt.Sprintf("%.3f", expectedSlice[index]) {
-				t.Errorf("expecting %+v to be equal %+v", projection.Coordinates, expectedSlice)
-				break
-			}
+			So(rounderCoord, ShouldEqual, fmt.Sprintf("%.3f", expectedSlice[index]))
 		}
-
-		if !projection.IsOrthogonalTo(v2) {
-			t.Errorf("expecint %+v to be orthogonal to %+v", projection, v2)
-		}
+		So(projection.IsOrthogonalTo(v2), ShouldBeTrue)
 	})
 }
 
 func TestDecomposeVector(t *testing.T) {
-	// scenario3 [] [1.040,-3.361,-5.190]
 	v1 := Vector{Coordinates: []float64{3.009, -6.172, 3.692, -2.51}}
 	v2 := Vector{Coordinates: []float64{6.404, -9.144, 2.759, 8.718}}
+	// Are these test cases required to sequential ???? don't reme
 
-	projectionParallel := v1.Project(v2)
+	Convey("Validating projection of vectors", t, func() {
+		projectionParallel := v1.Project(v2)
 
-	expectedSliceParallel := []float64{1.969, -2.811, .848, 2.680}
-	if len(projectionParallel.Coordinates) <= 0 {
-		t.Errorf("empty projection coordinates")
-	}
+		expectedSliceParallel := []float64{1.969, -2.811, .848, 2.680}
+		So(projectionParallel.Coordinates, ShouldNotBeEmpty)
 
-	for index, coordinate := range projectionParallel.Coordinates {
-		rounderCoord := fmt.Sprintf("%.3f", coordinate)
-		if rounderCoord != fmt.Sprintf("%.3f", expectedSliceParallel[index]) {
-			t.Errorf("expecting %+v to be equal %+v", projectionParallel.Coordinates, expectedSliceParallel)
-			break
+		for index, coordinate := range projectionParallel.Coordinates {
+			rounderCoord := fmt.Sprintf("%.3f", coordinate)
+			So(rounderCoord, ShouldEqual, fmt.Sprintf("%.3f", expectedSliceParallel[index]))
 		}
-	}
+	})
 
-	projectionOrthogonal := v1.Orthogonal(v2)
+	Convey("Validating orthogonal of vectors", t, func() {
+		projectionOrthogonal := v1.Orthogonal(v2)
 
-	if len(projectionOrthogonal.Coordinates) <= 0 {
-		t.Errorf("empty projection coordinates")
-	}
+		So(projectionOrthogonal.Coordinates, ShouldNotBeEmpty)
 
-	expectedSliceOrthogonal := []float64{1.04, -3.361, 2.844, -5.19}
-	for index, coordinate := range projectionOrthogonal.Coordinates {
-		rounderCoord := fmt.Sprintf("%.3f", coordinate)
-		if rounderCoord != fmt.Sprintf("%.3f", expectedSliceOrthogonal[index]) {
-			t.Errorf("expecting %+v to be equal %+v", projectionOrthogonal.Coordinates, expectedSliceOrthogonal)
-			break
+		expectedSliceOrthogonal := []float64{1.04, -3.361, 2.844, -5.19}
+		for index, coordinate := range projectionOrthogonal.Coordinates {
+			rounderCoord := fmt.Sprintf("%.3f", coordinate)
+			So(rounderCoord, ShouldEqual, fmt.Sprintf("%.3f", expectedSliceOrthogonal[index]))
 		}
-	}
 
-	if !projectionOrthogonal.IsOrthogonalTo(v2) {
-		t.Errorf("expecint %+v to be orthogonal to %+v", projectionOrthogonal, v2)
-	}
+		So(projectionOrthogonal.IsOrthogonalTo(v2), ShouldBeTrue)
+	})
 }
 
 func TestCrossProduct(t *testing.T) {
@@ -390,36 +328,26 @@ func TestCrossProduct(t *testing.T) {
 		product := v1.CrossProduct(v2)
 
 		xCoord := product.Coordinates[0]
-		if fmt.Sprintf("%.3f", xCoord) != expectedValues[0] {
-			t.Errorf("x coordinate should be %.3f got %s", xCoord, expectedValues[0])
-		}
+		So(fmt.Sprintf("%.3f", xCoord), ShouldEqual, expectedValues[0])
 
 		yCoord := product.Coordinates[1]
-		if fmt.Sprintf("%.3f", yCoord) != expectedValues[1] {
-			t.Errorf("x coordinate should be %.3f got %s", yCoord, expectedValues[1])
-		}
+		So(fmt.Sprintf("%.3f", yCoord), ShouldEqual, expectedValues[1])
 
 		zCoord := product.Coordinates[2]
-		if fmt.Sprintf("%.3f", zCoord) != expectedValues[2] {
-			t.Errorf("x coordinate should be %.3f got %s", zCoord, expectedValues[2])
-		}
+		So(fmt.Sprintf("%.3f", zCoord), ShouldEqual, expectedValues[2])
 
-		if !product.IsOrthogonalTo(v1) {
-			t.Errorf("cross product result should be orthogonal to v1")
-		}
+		So(product.IsOrthogonalTo(v1), ShouldBeTrue)
 
-		if !product.IsOrthogonalTo(v2) {
-			t.Errorf("cross product result should be orthogonal to v2")
-		}
+		So(product.IsOrthogonalTo(v2), ShouldBeTrue)
 	}
 
-	t.Run("Scenario1", func(t *testing.T) {
+	Convey("Scenario1", t, func() {
 		v1 := Vector{Coordinates: []float64{5, 3, -2}}
 		v2 := Vector{Coordinates: []float64{-1, 0, 3}}
 		baseScenario(t, v1, v2, []string{"9.000", "-13.000", "3.000"})
 	})
 
-	t.Run("Scenario2", func(t *testing.T) {
+	Convey("Scenario2", t, func() {
 		v1 := Vector{Coordinates: []float64{8.462, 7.893, -8.187}}
 		v2 := Vector{Coordinates: []float64{6.984, -5.975, 4.778}}
 		baseScenario(t, v1, v2, []string{"-11.205", "-97.609", "-105.685"})
@@ -427,21 +355,19 @@ func TestCrossProduct(t *testing.T) {
 }
 
 func TestParallelogramArea(t *testing.T) {
-	v1 := Vector{Coordinates: []float64{-8.987, -9.838, 5.031}}
-	v2 := Vector{Coordinates: []float64{-4.268, -1.861, -8.866}}
-	area := v1.ParallelogramArea(v2)
-
-	if fmt.Sprintf("%.3f", area) != "142.122" {
-		t.Errorf("Expecting 1.0 found %.3f", area)
-	}
+	Convey("Expeting 1.0 area", t, func() {
+		v1 := Vector{Coordinates: []float64{-8.987, -9.838, 5.031}}
+		v2 := Vector{Coordinates: []float64{-4.268, -1.861, -8.866}}
+		area := v1.ParallelogramArea(v2)
+		So(fmt.Sprintf("%.3f", area), ShouldEqual, "142.122")
+	})
 }
 
 func TestTriangleArea(t *testing.T) {
-	v1 := Vector{Coordinates: []float64{1.5, 9.547, 3.691}}
-	v2 := Vector{Coordinates: []float64{-6.007, 0.124, 5.772}}
-	area := v1.TriangleArea(v2)
-
-	if fmt.Sprintf("%.3f", area) != "42.565" {
-		t.Errorf("Expecting 1.0 found %.3f", area)
-	}
+	Convey("Expecting 1.0 area", t, func() {
+		v1 := Vector{Coordinates: []float64{1.5, 9.547, 3.691}}
+		v2 := Vector{Coordinates: []float64{-6.007, 0.124, 5.772}}
+		area := v1.TriangleArea(v2)
+		So(fmt.Sprintf("%.3f", area), ShouldEqual, "42.565")
+	})
 }
