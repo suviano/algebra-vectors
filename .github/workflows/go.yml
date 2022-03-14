@@ -23,18 +23,26 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-      
+  
     - name: Slack Action Status
       # You may pin to the exact commit or the version.
       # uses: navilan/slack-action-status@ae11764ebdc1a0f0a8a75dedf8de6a7a0b599857
       uses: navilan/slack-action-status@v3.0.0
       with:
         # Use secrets.GITHUB_TOKEN
-        githubToken: secrets.GITHUB_TOKEN
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
         # Slack APP Bot Token
-        botToken: secrets.GITHUB_BOT_TOKEN
+        botToken: ${{ secrets.GITHUB_BOT_TOKEN }}
         # Slack Channel ID
-        channelId: secrets.GITHUB_CHANNEL_ID
+        channelId: ${{ secrets.GITHUB_CHANNEL_ID }}
         # Status of the build as of now
-        status: Testing actions
-        # Additional parameters as string in '- <key>: <value>' format
+        status: "Testing actions"
+        indicators: |
+          - completed: ":white_check_mark:"
+          - running: ":hourglass:"
+          - queued: ":double_vertical_bar:"
+          - unclear: ":grey_question:"
+          - failed: ":x:"
+          - cancelled: ":octogonal_sign:"
+          - skipped: ":large_green_square:"
+
