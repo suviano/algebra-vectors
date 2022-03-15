@@ -23,37 +23,37 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-      # - name: Slack Action Status
-      #   # uses: navilan/slack-action-status@ae11764ebdc1a0f0a8a75dedf8de6a7a0b599857
-      #   uses: navilan/slack-action-status@v3.0.0
-      #   with:
-      #     githubToken: ${{ secrets.GITHUB_TOKEN }}
-      #     botToken: ${{ secrets.GITHUB_BOT_TOKEN }}
-      #     channelId: ${{ secrets.GITHUB_CHANNEL_ID }}
-      #     status: "Testing actions"
-      #     indicators: |
-      #       - completed: ":white_check_mark:"
-      #       - running: ":hourglass:"
-      #       - queued: ":double_vertical_bar:"
-      #       - unclear: ":grey_question:"
-      #       - failed: ":x:"
-      #       - cancelled: ":octogonal_sign:"
-      #       - skipped: ":large_green_square:"
+      - name: Slack Action Status
+        # uses: navilan/slack-action-status@ae11764ebdc1a0f0a8a75dedf8de6a7a0b599857
+        uses: navilan/slack-action-status@v3.0.0
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          botToken: ${{ secrets.BOT_TOKEN }}
+          channelId: ${{ secrets.CHANNEL_ID }}
+          status: "Testing actions"
+          indicators: |
+            - completed: ":white_check_mark:"
+            - running: ":hourglass:"
+            - queued: ":double_vertical_bar:"
+            - unclear: ":grey_question:"
+            - failed: ":x:"
+            - cancelled: ":octogonal_sign:"
+            - skipped: ":large_green_square:"
 
-      # - name: Send GitHub Action trigger data to Slack workflow
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.18.0
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Post to a Slack channel
+      - name: Send GitHub Action trigger data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.18.0
-        with:
-          # Slack channel id, channel name, or user id to post message.
-          # See also: https://api.slack.com/methods/chat.postMessage#channels
-          channel-id: ${{ secrets.CHANNEL_ID }}
-          # For posting a simple plain text message
-          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # - name: Post to a Slack channel
+      #   id: slack
+      #   uses: slackapi/slack-github-action@v1.18.0
+      #   with:
+      #     # Slack channel id, channel name, or user id to post message.
+      #     # See also: https://api.slack.com/methods/chat.postMessage#channels
+      #     channel-id: ${{ secrets.CHANNEL_ID }}
+      #     # For posting a simple plain text message
+      #     slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+      #   env:
+      #     SLACK_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
