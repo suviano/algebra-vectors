@@ -7,55 +7,145 @@ on:
     branches: [master]
 
 jobs:
+  slack:
+    runs-on: ubuntu-latest
+    outputs:
+      message_id: ${{ steps.slack.outputs.message_id }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Setup Complete !!
+        uses: ./
+        id: slack
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Preparing"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
   build:
+    needs: slack
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
+      - name: Notify 1
+        uses: ./
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Build Started"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
 
+      - name: Notify 2
+        uses: ./
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Build in progress"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
+      
       - name: Build
         run: go build -v ./...
+      
+      - name: Notify 3
+        uses: ./
+        if: success()
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Build in progress"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
+      - uses: ./
+        if: failure()
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "FAILED"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
+          forceFailure: true
+  
+  test:
+    needs:
+      - slack
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Verifying Source"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
 
       - name: Test
         run: go test -v ./...
 
-      - name: Slack Action Status
-        # uses: navilan/slack-action-status@ae11764ebdc1a0f0a8a75dedf8de6a7a0b599857
-        uses: navilan/slack-action-status@v3.0.0
+      - uses: ./
+        if: success()
         with:
           githubToken: ${{ secrets.TOKEN }}
-          botToken: ${{ secrets.BOT_TOKEN }}
-          channelId: ${{ secrets.CHANNEL_ID }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
           templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Testing Action"
-          inclusionSuffix: "!!" 
-          indicators: |
-            - completed: ✅
-            - running: ⏳
-            - queued: ⏸
-            - unclear: ❔
-            - failed: ❌
-            - cancelled: 🛑
-            - skipped: 🟩
+          status: "Testing"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
+      - uses: ./
+        if: failure()
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "FAILED"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
+          forceFailure: true
 
-      # - name: Send GitHub Action trigger data to Slack workflow
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.18.0
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      # - name: Post to a Slack channel
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.18.0
-      #   with:
-      #     # Slack channel id, channel name, or user id to post message.
-      #     # See also: https://api.slack.com/methods/chat.postMessage#channels
-      #     channel-id: ${{ secrets.CHANNEL_ID }}
-      #     # For posting a simple plain text message
-      #     slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-      #   env:
-      #     SLACK_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+  finish:
+    runs-on: ubuntu-latest
+    needs:
+      - slack
+      - build
+      - test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          githubToken: ${{ secrets.TOKEN }}
+          messageId: ${{ needs.slack.outputs.message_id }}
+          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
+          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Build finished"
+          params: ${{ env.slack_params }}
+          inclusionSuffix: "!!"
