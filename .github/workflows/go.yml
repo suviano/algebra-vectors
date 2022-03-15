@@ -6,7 +6,13 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  slack_params: |
+    - name1: algebra vectors
+    - link1: https://github.com/suviano/algebra-vectors
+
 jobs:
+
   slack:
     runs-on: ubuntu-latest
     outputs:
@@ -24,6 +30,7 @@ jobs:
           status: "Preparing"
           params: ${{ env.slack_params }}
           inclusionSuffix: "!!"
+
   build:
     needs: slack
     runs-on: ubuntu-latest
