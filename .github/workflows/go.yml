@@ -34,13 +34,13 @@ jobs:
           status: "Testing Action"
           inclusionSuffix: "!!" 
           indicators: |
-            - completed: ":white_check_mark:"
-            - running: ":hourglass:"
-            - queued: ":double_vertical_bar:"
-            - unclear: ":grey_question:"
-            - failed: ":x:"
-            - cancelled: ":octogonal_sign:"
-            - skipped: ":large_green_square:"
+            - completed: ✅
+            - running: ⏳
+            - queued: ⏸
+            - unclear: ❔
+            - failed: ❌
+            - cancelled: 🛑
+            - skipped: 🟩
 
       # - name: Send GitHub Action trigger data to Slack workflow
       #   id: slack
