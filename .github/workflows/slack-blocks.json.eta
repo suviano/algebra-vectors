@@ -1,0 +1,116 @@
+{
+    "blocks": [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": ":flying_saucer: <%= it.workflow.name %>",
+                "emoji": true
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "On commit to *<%= it.source.branch %>* by _@<%= it.source.commitBy %>_"
+                }
+            ]
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "<%= it.source.message %>"
+            }
+        },
+        {
+            "type": "divider"
+        },
+        <% if(it.source.pr) {%>
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Linked Pull Request*\n <%= it.source.pr.title %>"
+            }
+        },
+        <% if(it.source.pr.body  && it.source.pr.body !== '') {%>
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "<%= it.source.pr.body %>"
+                }
+            ]
+        },
+        <% } %>
+        {
+            "type": "divider"
+        },
+        <% } %>
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "<%= it.status %>"
+            }
+        },
+        <% it.jobs.forEach(function(job) { %>
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "<%= job.indicator %> <%= job.name %>"
+                }
+            ]
+        },
+        <% if (job.status === "running") { %>
+        <% job.steps.forEach(function(step) { %>
+        <% if (step.name) { %>
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "　　　　<%= step.indicator %> <%= step.name %>"
+                }
+            ]
+        },
+        <% } %>
+        <% }) %> 
+        <% } %>
+        <% }) %>
+        {
+            "type": "divider"
+        },
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "<<%= it.workflow.url %> | Workflow>"
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": "<<%= it.source.url %> | Commit>"
+                },
+                <% if (it.source.pr) {%>
+                {
+                    "type": "mrkdwn",
+                    "text": "<<%= it.source.pr.url %> | Pull Request>"
+                },
+                <% } %>
+                {
+                    "type": "mrkdwn",
+                    "text": "<<%= it.params.link1 %> | <%= it.params.name1 %>>"
+                }
+            ]
+        }
+    ]
+}

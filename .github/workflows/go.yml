@@ -30,7 +30,9 @@ jobs:
           githubToken: ${{ secrets.TOKEN }}
           botToken: ${{ secrets.BOT_TOKEN }}
           channelId: ${{ secrets.CHANNEL_ID }}
-          status: "Testing actions"
+          templateFile: .github/workflows/slack-blocks.json.eta
+          status: "Testing Action"
+          inclusionSuffix: "!!" 
           indicators: |
             - completed: ":white_check_mark:"
             - running: ":hourglass:"
@@ -40,11 +42,11 @@ jobs:
             - cancelled: ":octogonal_sign:"
             - skipped: ":large_green_square:"
 
-      - name: Send GitHub Action trigger data to Slack workflow
-        id: slack
-        uses: slackapi/slack-github-action@v1.18.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # - name: Send GitHub Action trigger data to Slack workflow
+      #   id: slack
+      #   uses: slackapi/slack-github-action@v1.18.0
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # - name: Post to a Slack channel
       #   id: slack
