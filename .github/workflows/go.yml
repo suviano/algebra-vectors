@@ -2,157 +2,22 @@ name: Go
 
 on:
   push:
-    branches: [master]
   pull_request:
     branches: [master]
 
-env:
-  slack_params: |
-    - name1: algebra vectors
-    - link1: https://github.com/suviano/algebra-vectors
-
 jobs:
-
-  slack:
-    runs-on: ubuntu-latest
-    outputs:
-      message_id: ${{ steps.slack.outputs.message_id }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Slack Setup Complete !!
-        uses: ./
-        id: slack
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Preparing"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
-
   build:
-    needs: slack
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Notify 1
-        uses: ./
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Build Started"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
 
-      - name: Notify 2
-        uses: ./
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Build in progress"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
-      
       - name: Build
         run: go build -v ./...
-      
-      - name: Notify 3
-        uses: ./
-        if: success()
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Build in progress"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
-      - uses: ./
-        if: failure()
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "FAILED"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
-          forceFailure: true
-  
-  test:
-    needs:
-      - slack
-      - build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Verifying Source"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
 
       - name: Test
         run: go test -v ./...
-
-      - uses: ./
-        if: success()
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Testing"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
-      - uses: ./
-        if: failure()
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "FAILED"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
-          forceFailure: true
-
-  finish:
-    runs-on: ubuntu-latest
-    needs:
-      - slack
-      - build
-      - test
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          githubToken: ${{ secrets.TOKEN }}
-          messageId: ${{ needs.slack.outputs.message_id }}
-          botToken: ${{ secrets.SLACK_BOT_TOKEN }}
-          channelId: ${{ secrets.SLACK_CHANNEL_ID }}
-          templateFile: .github/workflows/slack-blocks.json.eta
-          status: "Build finished"
-          params: ${{ env.slack_params }}
-          inclusionSuffix: "!!"
